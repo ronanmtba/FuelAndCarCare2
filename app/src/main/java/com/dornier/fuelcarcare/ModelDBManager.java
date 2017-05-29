@@ -21,6 +21,9 @@ public class ModelDBManager extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase sqLiteDatabase) {
         sqLiteDatabase.execSQL(database_create_fill_ups);
+        sqLiteDatabase.execSQL(database_create_expenses);
+        sqLiteDatabase.execSQL(database_create_maintenances);
+        sqLiteDatabase.execSQL(database_create_vehicles);
     }
 
     @Override
