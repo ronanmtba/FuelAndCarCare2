@@ -7,10 +7,13 @@ import java.util.ArrayList;
  */
 
 public class ModelVehicle {
+    private long local_id;
+    private String id;
     private String name;
     private String manufacturer;
     private String model;
     private String year;
+    private String status;
     private ArrayList<ModelMaintenanceAlert> alerts;
     private ArrayList<ModelFillUp> fillUps;
     private ArrayList<ModelExpense> expenses;
@@ -25,11 +28,14 @@ public class ModelVehicle {
         this.expenses   = new ArrayList<ModelExpense>();
     }
 
-    public ModelVehicle(String name, String manufacturer, String model, String year) {
+    public ModelVehicle(long local_id, String id, String name, String manufacturer, String model, String year, String status) {
+        this.local_id       = local_id;
+        this.id             = id;
         this.name           = name;
         this.manufacturer   = manufacturer;
         this.model          = model;
         this.year           = year;
+        this.status         = status;
         this.alerts         = new ArrayList<ModelMaintenanceAlert>();
         this.fillUps        = new ArrayList<ModelFillUp>();
         this.expenses       = new ArrayList<ModelExpense>();

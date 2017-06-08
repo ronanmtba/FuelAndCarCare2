@@ -19,9 +19,12 @@ import org.json.JSONObject;
 import java.net.CookieHandler;
 import java.net.CookieManager;
 import java.security.MessageDigest;
+import java.text.DateFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 
 /**
@@ -216,4 +219,21 @@ public class ModelDataManager {
         }
         return "";
     }
+    public static String dateToString(Date date) throws NullPointerException{
+        DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        String reportDate = df.format(date);
+        return reportDate;
+    }
+
+    public static Date StringToDate(String string) {
+        DateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.ENGLISH);
+        try {
+            Date date = format.parse(string);
+            return date;
+        } catch (ParseException e) {
+            return new Date(0);
+        }
+
+    }
+
 }
