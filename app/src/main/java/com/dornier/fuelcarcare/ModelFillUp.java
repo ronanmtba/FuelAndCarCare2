@@ -44,4 +44,84 @@ public class ModelFillUp {
         this.car_id     = car_id;
         this.status     = status;
     }
+
+    public long getLocal_id() {
+        return local_id;
+    }
+
+    public void setLocal_id(long local_id) {
+        this.local_id = local_id;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public double getFinalPrice() {
+        return finalPrice;
+    }
+
+    public void setFinalPrice(double finalPrice) {
+        this.finalPrice = finalPrice;
+    }
+
+    public double getFuelPrice() {
+        return fuelPrice;
+    }
+
+    public void setFuelPrice(double fuelPrice) {
+        this.fuelPrice = fuelPrice;
+    }
+
+    public double getFuelAmount() {
+        return fuelAmount;
+    }
+
+    public void setFuelAmount(double fuelAmount) {
+        this.fuelAmount = fuelAmount;
+    }
+
+    public String getLocation() {
+        return location;
+    }
+
+    public void setLocation(String location) {
+        this.location = location;
+    }
+
+    public Date getDate() {
+        return date;
+    }
+
+    public void setDate(Date date) {
+        this.date = date;
+    }
+
+    public String getFuel() {
+        return fuel;
+    }
+
+    public void setFuel(String fuel) {
+        this.fuel = fuel;
+    }
+
+    public String getCar_id() {
+        return car_id;
+    }
+
+    public void setCar_id(String car_id) {
+        this.car_id = car_id;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
 }

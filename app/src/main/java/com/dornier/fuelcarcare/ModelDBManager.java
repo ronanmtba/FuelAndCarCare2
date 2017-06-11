@@ -56,7 +56,7 @@ public class ModelDBManager extends SQLiteOpenHelper {
             fill_ups_fill_date      +" text not null, " +
             fill_ups_fuel           +" text not null, " +
             fill_ups_car_id         +" text not null, " +
-            fill_ups_status         +" text not null\" +);";
+            fill_ups_status         +" text not null );";
 
     /**Tabela expenses**/
 
@@ -79,7 +79,7 @@ public class ModelDBManager extends SQLiteOpenHelper {
             expenses_component_name +" text not null, " +
             expenses_expense_date   +" text not null, " +
             expenses_car_id         +" text not null, " +
-            expenses_status         +" text not null\" +);";
+            expenses_status         +" text not null );";
 
     /**tabela maintenances**/
 
@@ -100,7 +100,7 @@ public class ModelDBManager extends SQLiteOpenHelper {
             maintenances_item               +" text not null, " +
             maintenances_maintenance_date   +" text not null, " +
             maintenances_car_id             +" text not null, " +
-            maintenances_status             +" text not null\" +);";
+            maintenances_status             +" text not null );";
 
     /**tabela vehicles**/
 
@@ -115,11 +115,11 @@ public class ModelDBManager extends SQLiteOpenHelper {
 
     private static final String database_create_vehicles =  "create table "
             + table_name_vehicles + "( " +
-            vehicles_local_id       + "integer primary key autoincrement, " +
+            vehicles_local_id       +" integer primary key autoincrement, " +
             vehicles_id             +" text not null, " +
             vehicles_name           +" text not null, " +
             vehicles_manufacturer   +" text not null, " +
             vehicles_model          +" text not null, " +
             vehicles_year           +" text not null, " +
-            vehicles_status         +" text not null\" +);";
+            vehicles_status         +" text not null );";
 }

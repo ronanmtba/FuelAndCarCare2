@@ -19,10 +19,12 @@ public class ModelVehicle {
     private ArrayList<ModelExpense> expenses;
 
     public ModelVehicle(String name) {
+        this.id         = "";
         this.name       = name;
         this.manufacturer= "";
         this.model      = "";
         this.year       = "";
+        this.status     = "0";
         this.alerts     = new ArrayList<ModelMaintenanceAlert>();
         this.fillUps    = new ArrayList<ModelFillUp>();
         this.expenses   = new ArrayList<ModelExpense>();
@@ -39,6 +41,30 @@ public class ModelVehicle {
         this.alerts         = new ArrayList<ModelMaintenanceAlert>();
         this.fillUps        = new ArrayList<ModelFillUp>();
         this.expenses       = new ArrayList<ModelExpense>();
+    }
+
+    public long getLocal_id() {
+        return local_id;
+    }
+
+    public void setLocal_id(long local_id) {
+        this.local_id = local_id;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
     }
 
     public String getName() {

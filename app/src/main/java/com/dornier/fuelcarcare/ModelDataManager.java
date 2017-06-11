@@ -22,6 +22,7 @@ import java.security.MessageDigest;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Locale;
@@ -37,6 +38,8 @@ public class ModelDataManager {
     private static ModelDataManager singleton;
     private Boolean sessionStart;
     private static final String TAG = ModelDataManager.class.getSimpleName();
+    ArrayList<ModelVehicle> vehicles;
+
 
     public Context getActualContext() {
         return actualContext;
@@ -53,11 +56,13 @@ public class ModelDataManager {
     private ModelDataManager() {
         CookieManager cm = new CookieManager();
         CookieHandler.setDefault(cm);
+        vehicles = new ArrayList<ModelVehicle>();
     }
 
     public static ModelDataManager getInstance(){
         if(singleton == null){
             singleton = new ModelDataManager();
+
         }
         return singleton;
     }
@@ -89,7 +94,6 @@ public class ModelDataManager {
         }
         requestToServer("login.php", obj, o, "login");
     }
-
 
     /**************************************/
     /* Shared Server Comunication methods */
@@ -219,6 +223,7 @@ public class ModelDataManager {
         }
         return "";
     }
+
     public static String dateToString(Date date) throws NullPointerException{
         DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         String reportDate = df.format(date);
@@ -234,6 +239,53 @@ public class ModelDataManager {
             return new Date(0);
         }
 
+    }
+
+    /***********/
+    /* Set/Get */
+    /***********/
+
+    public ArrayList<ModelVehicle> getVehicles() {
+        return vehicles;
+    }
+
+    /****************/
+    /* DBManagement */
+    /****************/
+
+    public void loadFromDB(){
+        vehicles = ModelDBAdapter.getInstance(actualContext).getAllVehicles();
+        ArrayList<ModelFillUp> fill_ups = ModelDBAdapter.getInstance(actualContext).getAllFillUps();
+        ArrayList<ModelExpense> expenses = ModelDBAdapter.getInstance(actualContext).getAllExpenses();
+        ArrayList<ModelMaintenanceAlert> alerts = ModelDBAdapter.getInstance(actualContext).getAllMaintenances();
+
+        for(ModelVehicle vehicle: vehicles){
+            //Em cada etapa, será verificado o status, para classificar corretamente
+            //status = 0 => Offline, usaremos a local_id
+            //status > 0 => Online, usamos o id correto
+            for(ModelFillUp fill: fill_ups){
+                if(fill.getCar_id().equals(vehicle.getLocal_id())){
+                    vehicle.getFillUps().add(fill);
+                    fill_ups.remove(fill);
+                }
+            }
+            for(ModelMaintenanceAlert alert: alerts){
+                if(alert.getCar_id().equals(vehicle.getLocal_id())){
+                    vehicle.getAlerts().add(alert);
+                    alerts.remove(alert);
+                }
+            }
+            for(ModelExpense expense: expenses){
+                if(expense.getCar_id().equals(vehicle.getLocal_id())){
+                    vehicle.getExpenses().add(expense);
+                    expenses.remove(expense);
+                }
+            }
+        }
+    }
+
+    public void addVehicle(ModelVehicle vehicle){
+        vehicles.add(ModelDBAdapter.getInstance(actualContext).insertVehicle(vehicle));
     }
 
 }

@@ -14,20 +14,18 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 
-import java.util.ArrayList;
-
 public class ActivitySelectVehicle extends AppCompatActivity {
 
     Button addCar;
     ListView listView;
     ArrayAdapter<ModelVehicle> adapter;
-    ArrayList<ModelVehicle> vehicles = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_select_vehicle);
         ModelDataManager.getInstance().setActualContext(ActivitySelectVehicle.this);
+        ModelDataManager.getInstance().loadFromDB();
 
         addCar = (Button) findViewById(R.id.SelectCarAddNew);
         addCar.setOnClickListener(new View.OnClickListener() {
@@ -38,12 +36,8 @@ public class ActivitySelectVehicle extends AppCompatActivity {
         });
         listView = (ListView) findViewById(R.id.SelectCarListView);
 
-        vehicles.add(new ModelVehicle("Polo"));
-        vehicles.add(new ModelVehicle("Fox"));
-        vehicles.add(new ModelVehicle("Sahara"));
-        vehicles.add(new ModelVehicle("XRE"));
+        adapter = new ArrayAdapter<ModelVehicle>(this, android.R.layout.simple_list_item_1, ModelDataManager.getInstance().getVehicles());
 
-        adapter = new ArrayAdapter<ModelVehicle>(this, android.R.layout.simple_list_item_1, vehicles);
         listView.setAdapter(adapter);
 
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -67,7 +61,8 @@ public class ActivitySelectVehicle extends AppCompatActivity {
             public void onClick(DialogInterface dialog, int whichButton) {
                 Editable editable = edittext.getText();
                 String carName = edittext.getText().toString();
-                vehicles.add(new ModelVehicle(carName));
+                ModelDataManager.getInstance().addVehicle(new ModelVehicle(carName));
+                adapter.notifyDataSetChanged();
             }
         });
 
