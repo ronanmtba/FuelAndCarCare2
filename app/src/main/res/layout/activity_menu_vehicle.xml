@@ -11,14 +11,22 @@
     android:background="@drawable/background"
     tools:context="com.dornier.fuelcarcare.ActivitySelectVehicle">
 
+    <TextView
+        android:textColor="#fff"
+        android:textAlignment="center"
+        android:id="@+id/MenuCarVehicleName"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/cell_layout"
+        android:textAppearance="@style/TextAppearance.AppCompat.Large" />
+
     <ListView
         android:background="@drawable/cell_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
         android:id="@+id/MenuCarListView"
-        android:layout_marginBottom="20dp"
-        >
+        android:layout_marginTop="20dp"
+        android:layout_below="@+id/MenuCarVehicleName">
     </ListView>
 
 </RelativeLayout>

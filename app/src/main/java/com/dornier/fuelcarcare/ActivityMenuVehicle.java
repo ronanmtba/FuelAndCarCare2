@@ -15,6 +15,7 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -23,6 +24,7 @@ import java.util.Date;
 public class ActivityMenuVehicle extends AppCompatActivity {
 
     ListView listView;
+    TextView vehicle_name;
     ModelVehicle selectedVehicle;
     ArrayAdapter<String> adapter;
     String[] options;
@@ -33,6 +35,8 @@ public class ActivityMenuVehicle extends AppCompatActivity {
         setContentView(R.layout.activity_menu_vehicle);
         ModelDataManager.getInstance().setActualContext(ActivityMenuVehicle.this);
         selectedVehicle = ModelDataManager.getInstance().getVehicles().get((int) getIntent().getExtras().getLong("index"));
+        vehicle_name = (TextView) findViewById(R.id.MenuCarVehicleName);
+        vehicle_name.setText(selectedVehicle.getName());
         options = new String[] {
                 "Adicionar abastecimento",
                 "Adicionar alerta de manutenção",
@@ -110,7 +114,7 @@ public class ActivityMenuVehicle extends AppCompatActivity {
         confirmButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
+                
                 ModelFillUp fill_up = new ModelFillUp(fillUpTotalPrice.getText().toString(),
                         fuelPrice.getText().toString(),
                         fillUpLiters.getText().toString(),
@@ -174,15 +178,22 @@ public class ActivityMenuVehicle extends AppCompatActivity {
     }
 
     public void showFillUpHistoryActions(){
-        Intent i = new Intent(this, ActivityShowFillUps.class);
-        Bundle b = new Bundle();
-        b.putLong("index", getIntent().getExtras().getLong("index"));
-        i.putExtras(b);
-        startActivity(i);
+        if(selectedVehicle.getFillUps().size() > 1) {
+            Intent i = new Intent(this, ActivityShowFillUps.class);
+            Bundle b = new Bundle();
+            b.putLong("index", getIntent().getExtras().getLong("index"));
+            i.putExtras(b);
+            startActivity(i);
+        }
+        else{
+            Toast.makeText(this,"Precisamos de ao menos 2 abastecimentos cadastrados para calcular as médias!", Toast.LENGTH_LONG).show();
+        }
     }
+
     public void showExpensesActions(){
 
     }
+
     public void editVehicleActions(){
         final Dialog dialog = new Dialog(ActivityMenuVehicle.this);
         dialog.setContentView(R.layout.dialog_edit_vehicle);
@@ -221,6 +232,7 @@ public class ActivityMenuVehicle extends AppCompatActivity {
 
         dialog.show();
     }
+
     @Override
     public void onBackPressed() {
         startActivity(new Intent(this, ActivitySelectVehicle.class));
