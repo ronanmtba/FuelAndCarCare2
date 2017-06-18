@@ -225,13 +225,15 @@ public class ModelDataManager {
     }
 
     public static String dateToString(Date date) throws NullPointerException{
-        DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        DateFormat df = new SimpleDateFormat("dd/MM/yyyy");
         String reportDate = df.format(date);
         return reportDate;
     }
 
     public static Date StringToDate(String string) {
-        DateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.ENGLISH);
+        DateFormat format = new SimpleDateFormat("dd/MM/yyyy", Locale.CANADA);
+        if(string.length() > 11)
+            format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.CANADA);
         try {
             Date date = format.parse(string);
             return date;
@@ -246,7 +248,12 @@ public class ModelDataManager {
     /***********/
 
     public ArrayList<ModelVehicle> getVehicles() {
-        return vehicles;
+        final ArrayList<ModelVehicle> toReturn = new ArrayList<ModelVehicle>();
+        for(ModelVehicle vehicle: vehicles){
+            if(Integer.parseInt(vehicle.getStatus()) >= 0)
+                toReturn.add(vehicle);
+        }
+        return toReturn;
     }
 
     /****************/
@@ -260,32 +267,37 @@ public class ModelDataManager {
         ArrayList<ModelMaintenanceAlert> alerts = ModelDBAdapter.getInstance(actualContext).getAllMaintenances();
 
         for(ModelVehicle vehicle: vehicles){
-            //Em cada etapa, será verificado o status, para classificar corretamente
-            //status = 0 => Offline, usaremos a local_id
-            //status > 0 => Online, usamos o id correto
+
             for(ModelFillUp fill: fill_ups){
-                if(fill.getCar_id().equals(vehicle.getLocal_id())){
+                long car_id = Long.parseLong(fill.getCar_id());
+                if(car_id == vehicle.getLocal_id()){
                     vehicle.getFillUps().add(fill);
-                    fill_ups.remove(fill);
+                    //fill_ups.remove(fill);
                 }
             }
             for(ModelMaintenanceAlert alert: alerts){
-                if(alert.getCar_id().equals(vehicle.getLocal_id())){
+                long car_id = Long.parseLong(alert.getCar_id());
+                if(car_id == vehicle.getLocal_id()){
                     vehicle.getAlerts().add(alert);
-                    alerts.remove(alert);
+                    //alerts.remove(alert);
                 }
             }
             for(ModelExpense expense: expenses){
-                if(expense.getCar_id().equals(vehicle.getLocal_id())){
+                long car_id = Long.parseLong(expense.getCar_id());
+                if(car_id == vehicle.getLocal_id()){
                     vehicle.getExpenses().add(expense);
-                    expenses.remove(expense);
+                    //expenses.remove(expense);
                 }
             }
         }
     }
 
-    public void addVehicle(ModelVehicle vehicle){
+    public void addOrUpdateVehicle(ModelVehicle vehicle){
         vehicles.add(ModelDBAdapter.getInstance(actualContext).insertVehicle(vehicle));
+    }
+
+    public void addFillUp(ModelVehicle vehicle, ModelFillUp fill_up){
+        vehicle.getFillUps().add(ModelDBAdapter.getInstance(actualContext).insertFillUp(fill_up));
     }
 
 }

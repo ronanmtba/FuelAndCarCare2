@@ -19,6 +19,7 @@ public class ModelVehicle {
     private ArrayList<ModelExpense> expenses;
 
     public ModelVehicle(String name) {
+        this.local_id   = 0;
         this.id         = "";
         this.name       = name;
         this.manufacturer= "";

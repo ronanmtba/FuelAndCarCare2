@@ -27,7 +27,8 @@ public class ModelDBAdapter {
             dbManager.fill_ups_fuel_price,
             dbManager.fill_ups_final_price,
             dbManager.fill_ups_location,
-            dbManager.fill_ups_status
+            dbManager.fill_ups_status,
+            dbManager.fill_ups_kilometers
     };
     private String[] expenses_columns = {
             dbManager.expenses_local_id,
@@ -99,8 +100,14 @@ public class ModelDBAdapter {
     }
 
     private ModelExpense cursorToExpense(Cursor cursor) {
-        ModelExpense expense = new ModelExpense(cursor.getLong(0),cursor.getString(1),cursor.getString(2),cursor.getString(3),
-                cursor.getString(4),cursor.getString(5),cursor.getString(6),cursor.getString(7));
+        ModelExpense expense = new ModelExpense(cursor.getLong(cursor.getColumnIndex(ModelDBManager.expenses_local_id)),
+                cursor.getString(cursor.getColumnIndex(ModelDBManager.expenses_id)),
+                cursor.getString(cursor.getColumnIndex(ModelDBManager.expenses_price)),
+                cursor.getString(cursor.getColumnIndex(ModelDBManager.expenses_quantity)),
+                cursor.getString(cursor.getColumnIndex(ModelDBManager.expenses_component_name)),
+                cursor.getString(cursor.getColumnIndex(ModelDBManager.expenses_expense_date)),
+                cursor.getString(cursor.getColumnIndex(ModelDBManager.expenses_car_id)),
+                cursor.getString(cursor.getColumnIndex(ModelDBManager.expenses_status)));
         return expense;
     }
 
@@ -109,12 +116,13 @@ public class ModelDBAdapter {
         return cursor;
     }
 
-    public ModelExpense getExpense (int idExpense){
+    public ModelExpense getExpense (long idExpense){
         Cursor cursor = database.query(ModelDBManager.table_name_expenses, expenses_columns, ModelDBManager.expenses_local_id + " = " +
                 idExpense, null,null, null, null);
         cursor.moveToFirst();
         return cursorToExpense(cursor);
     }
+
     public ArrayList<ModelExpense> getAllExpenses(){
         Cursor cursor = getExpenses();
         ArrayList<ModelExpense> toReturn = new ArrayList<ModelExpense>();
@@ -142,6 +150,7 @@ public class ModelDBAdapter {
         values.put(ModelDBManager.fill_ups_id,          fillUp.getId());
         values.put(ModelDBManager.fill_ups_location,    fillUp.getLocation());
         values.put(ModelDBManager.fill_ups_status,      fillUp.getStatus());
+        values.put(ModelDBManager.fill_ups_kilometers,  fillUp.getKilometers());
 
         long insertId = database.insert(ModelDBManager.table_name_fill_ups, null, values);
         Cursor cursor = database.query(ModelDBManager.table_name_fill_ups, fill_ups_oolumns, ModelDBManager.fill_ups_local_id + " = " +
@@ -155,8 +164,17 @@ public class ModelDBAdapter {
     }
 
     private ModelFillUp cursorToFillUp(Cursor cursor) {
-        ModelFillUp fillUp = new ModelFillUp(cursor.getLong(0),cursor.getString(1),cursor.getString(2),cursor.getString(3),
-                cursor.getString(4),cursor.getString(5),cursor.getString(6),cursor.getString(7),cursor.getString(8),cursor.getString(9));
+        ModelFillUp fillUp = new ModelFillUp(cursor.getLong(cursor.getColumnIndex(ModelDBManager.fill_ups_local_id)),
+                cursor.getString(cursor.getColumnIndex(ModelDBManager.fill_ups_id)),
+                cursor.getString(cursor.getColumnIndex(ModelDBManager.fill_ups_final_price)),
+                cursor.getString(cursor.getColumnIndex(ModelDBManager.fill_ups_fuel_price)),
+                cursor.getString(cursor.getColumnIndex(ModelDBManager.fill_ups_fuel_amount)),
+                cursor.getString(cursor.getColumnIndex(ModelDBManager.fill_ups_location)),
+                cursor.getString(cursor.getColumnIndex(ModelDBManager.fill_ups_fill_date)),
+                cursor.getString(cursor.getColumnIndex(ModelDBManager.fill_ups_fuel)),
+                cursor.getString(cursor.getColumnIndex(ModelDBManager.fill_ups_car_id)),
+                cursor.getString(cursor.getColumnIndex(ModelDBManager.fill_ups_status)),
+                cursor.getString(cursor.getColumnIndex(ModelDBManager.fill_ups_kilometers)));
         return fillUp;
     }
 
@@ -165,12 +183,13 @@ public class ModelDBAdapter {
         return cursor;
     }
 
-    public ModelFillUp getFillUp (int idFillUp){
+    public ModelFillUp getFillUp (long idFillUp){
         Cursor cursor = database.query(ModelDBManager.table_name_fill_ups, fill_ups_oolumns, ModelDBManager.fill_ups_local_id + " = " +
                 idFillUp, null,null, null, null);
         cursor.moveToFirst();
         return cursorToFillUp(cursor);
     }
+
     public ArrayList<ModelFillUp> getAllFillUps(){
         Cursor cursor = getFillUps();
         ArrayList<ModelFillUp> toReturn = new ArrayList<ModelFillUp>();
@@ -195,7 +214,10 @@ public class ModelDBAdapter {
         values.put(ModelDBManager.vehicles_model,       vehicle.getModel());
         values.put(ModelDBManager.vehicles_year,        vehicle.getYear());
         values.put(ModelDBManager.vehicles_status,      vehicle.getStatus());
-
+        if(vehicle.getLocal_id() > 0){
+            database.update(ModelDBManager.table_name_vehicles,values,ModelDBManager.vehicles_local_id+"="+vehicle.getLocal_id(), null);
+            return vehicle;
+        }
         long insertId = database.insert(ModelDBManager.table_name_vehicles, null, values);
         Cursor cursor = database.query(ModelDBManager.table_name_vehicles, vehicles_columns, ModelDBManager.vehicles_local_id + " = " +
                 insertId, null,null, null, null);
@@ -208,8 +230,14 @@ public class ModelDBAdapter {
     }
 
     private ModelVehicle cursorToVehicle(Cursor cursor) {
-        ModelVehicle vehicle = new ModelVehicle(cursor.getLong(0),cursor.getString(1),cursor.getString(2),cursor.getString(3),
-                cursor.getString(4),cursor.getString(5),cursor.getString(6));
+        //public ModelVehicle(long local_id, String id, String name, String manufacturer, String model, String year, String status) {
+        ModelVehicle vehicle = new ModelVehicle(cursor.getLong(cursor.getColumnIndex("local_id")),
+                cursor.getString(cursor.getColumnIndex("_id")),
+                cursor.getString(cursor.getColumnIndex("name")),
+                cursor.getString(cursor.getColumnIndex("manufacturer")),
+                cursor.getString(cursor.getColumnIndex("model")),
+                cursor.getString(cursor.getColumnIndex("year")),
+                cursor.getString(cursor.getColumnIndex("status")));
 
         return vehicle;
     }
@@ -219,12 +247,13 @@ public class ModelDBAdapter {
         return cursor;
     }
 
-    public ModelVehicle getVehicle (int idVehicle){
+    public ModelVehicle getVehicle (long idVehicle){
         Cursor cursor = database.query(ModelDBManager.table_name_vehicles, vehicles_columns, ModelDBManager.vehicles_local_id + " = " +
                 idVehicle, null,null, null, null);
         cursor.moveToFirst();
         return cursorToVehicle(cursor);
     }
+
     public ArrayList<ModelVehicle> getAllVehicles(){
         Cursor cursor = getVehicles();
         ArrayList<ModelVehicle> toReturn = new ArrayList<ModelVehicle>();
@@ -262,8 +291,13 @@ public class ModelDBAdapter {
     }
 
     private ModelMaintenanceAlert cursorToMaintenance(Cursor cursor) {
-        ModelMaintenanceAlert maintenance = new ModelMaintenanceAlert(cursor.getLong(0),cursor.getString(1),cursor.getString(2),cursor.getString(3),
-                cursor.getString(4),cursor.getString(5),cursor.getString(6));
+        ModelMaintenanceAlert maintenance = new ModelMaintenanceAlert(cursor.getLong(cursor.getColumnIndex(ModelDBManager.maintenances_local_id)),
+                cursor.getString(cursor.getColumnIndex(ModelDBManager.maintenances_id)),
+                cursor.getString(cursor.getColumnIndex(ModelDBManager.maintenances_kilometers)),
+                cursor.getString(cursor.getColumnIndex(ModelDBManager.maintenances_item)),
+                cursor.getString(cursor.getColumnIndex(ModelDBManager.maintenances_maintenance_date)),
+                cursor.getString(cursor.getColumnIndex(ModelDBManager.maintenances_car_id)),
+                cursor.getString(cursor.getColumnIndex(ModelDBManager.maintenances_status)));
 
         return maintenance;
     }
@@ -273,12 +307,13 @@ public class ModelDBAdapter {
         return cursor;
     }
 
-    public ModelMaintenanceAlert getMaintenance (int idMaintenance){
+    public ModelMaintenanceAlert getMaintenance (long idMaintenance){
         Cursor cursor = database.query(ModelDBManager.table_name_maintenances, maintenance_columns, ModelDBManager.maintenances_local_id + " = " +
                 idMaintenance, null,null, null, null);
         cursor.moveToFirst();
         return cursorToMaintenance(cursor);
     }
+
     public ArrayList<ModelMaintenanceAlert> getAllMaintenances(){
         Cursor cursor = getMaintenances();
         ArrayList<ModelMaintenanceAlert> toReturn = new ArrayList<ModelMaintenanceAlert>();

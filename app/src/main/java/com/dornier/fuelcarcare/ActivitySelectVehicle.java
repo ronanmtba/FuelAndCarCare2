@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.text.Editable;
 import android.text.InputType;
 import android.view.View;
 import android.widget.AdapterView;
@@ -13,6 +12,8 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
+
+import java.util.ArrayList;
 
 public class ActivitySelectVehicle extends AppCompatActivity {
 
@@ -43,7 +44,7 @@ public class ActivitySelectVehicle extends AppCompatActivity {
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                selectCarActions();
+                selectCarActions(i);
             }
         });
 
@@ -59,18 +60,25 @@ public class ActivitySelectVehicle extends AppCompatActivity {
 
         alert.setPositiveButton(" OK ", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int whichButton) {
-                Editable editable = edittext.getText();
                 String carName = edittext.getText().toString();
-                ModelDataManager.getInstance().addVehicle(new ModelVehicle(carName));
+                ModelDataManager.getInstance().addOrUpdateVehicle(new ModelVehicle(carName));
+                ArrayList<ModelVehicle> ad = ModelDataManager.getInstance().getVehicles();
                 adapter.notifyDataSetChanged();
+                adapter.clear();
+                adapter.addAll(ad);
             }
         });
 
         alert.show();
     }
 
-    public void selectCarActions(){
+    public void selectCarActions(int optionSelected){
         Intent i = new Intent(this, ActivityMenuVehicle.class);
+        Bundle b = new Bundle();
+        b.putLong("index", optionSelected);
+        i.putExtras(b);
+        finish();
         startActivity(i);
+
     }
 }

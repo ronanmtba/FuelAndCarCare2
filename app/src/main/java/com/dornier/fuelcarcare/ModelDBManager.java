@@ -44,6 +44,7 @@ public class ModelDBManager extends SQLiteOpenHelper {
     public static final String fill_ups_fuel =          "fuel";
     public static final String fill_ups_car_id =        "car_id";
     public static final String fill_ups_status =        "status";
+    public static final String fill_ups_kilometers =    "kilometers";
 
     private static final String database_create_fill_ups =  "create table "
             + table_name_fill_ups + "( " +
@@ -52,6 +53,7 @@ public class ModelDBManager extends SQLiteOpenHelper {
             fill_ups_final_price    +" text not null, " +
             fill_ups_fuel_price     +" text not null, " +
             fill_ups_fuel_amount    +" text not null, " +
+            fill_ups_kilometers     +" text not null, " +
             fill_ups_location       +" text not null, " +
             fill_ups_fill_date      +" text not null, " +
             fill_ups_fuel           +" text not null, " +

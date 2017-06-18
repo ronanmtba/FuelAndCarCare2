@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.dornier.fuelcarcare">
+
     <uses-permission android:name="android.permission.INTERNET" />
+
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -17,7 +19,8 @@
         </activity>
         <activity android:name=".ActivitySelectVehicle" />
         <activity android:name=".ActivityMenuVehicle" />
-        <activity android:name=".ActivityRegister"></activity>
+        <activity android:name=".ActivityRegister" />
+        <activity android:name=".ActivityShowFillUps"></activity>
     </application>
 
 </manifest>

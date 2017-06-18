@@ -1,6 +1,7 @@
 package com.dornier.fuelcarcare;
 
 import android.app.Dialog;
+import android.content.Intent;
 import android.support.annotation.FloatRange;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -9,6 +10,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Spinner;
@@ -30,6 +32,7 @@ public class ActivityMenuVehicle extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_menu_vehicle);
         ModelDataManager.getInstance().setActualContext(ActivityMenuVehicle.this);
+        selectedVehicle = ModelDataManager.getInstance().getVehicles().get((int) getIntent().getExtras().getLong("index"));
         options = new String[] {
                 "Adicionar abastecimento",
                 "Adicionar alerta de manutenção",
@@ -79,9 +82,10 @@ public class ActivityMenuVehicle extends AppCompatActivity {
         final EditText fuelPrice          = (EditText) dialog.findViewById(R.id.DialogFillUpFuelPrice);
         final EditText fillUpTotalPrice   = (EditText) dialog.findViewById(R.id.DialogFillUpTotalPrice);
         final EditText fillUpLiters       = (EditText) dialog.findViewById(R.id.DialogFillUpLiters);
-        EditText location           = (EditText) dialog.findViewById(R.id.DialogFillUpLocation);
-        EditText date               = (EditText) dialog.findViewById(R.id.DialogFillUpDate);
-        Spinner  fuel               = (Spinner)  dialog.findViewById(R.id.DialogFillUpFuel);
+        final EditText location           = (EditText) dialog.findViewById(R.id.DialogFillUpLocation);
+        final EditText kilometers         = (EditText) dialog.findViewById(R.id.DialogFillUpKilometers);
+        final EditText date               = (EditText) dialog.findViewById(R.id.DialogFillUpDate);
+        final Spinner  fuel               = (Spinner)  dialog.findViewById(R.id.DialogFillUpFuel);
         Button   confirmButton      = (Button)   dialog.findViewById(R.id.DialogFillUpButtonOK);
 
         date.setText(ModelDataManager.getActualDate());
@@ -106,6 +110,16 @@ public class ActivityMenuVehicle extends AppCompatActivity {
         confirmButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+
+                ModelFillUp fill_up = new ModelFillUp(fillUpTotalPrice.getText().toString(),
+                        fuelPrice.getText().toString(),
+                        fillUpLiters.getText().toString(),
+                        location.getText().toString(),
+                        date.getText().toString(),
+                        fuel.getSelectedItem().toString(),
+                        selectedVehicle.getLocal_id()+"",
+                        kilometers.getText().toString());
+                ModelDataManager.getInstance().addFillUp(selectedVehicle, fill_up);
                 dialog.dismiss();
             }
         });
@@ -127,6 +141,7 @@ public class ActivityMenuVehicle extends AppCompatActivity {
         confirmButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+
                 dialog.dismiss();
             }
         });
@@ -159,7 +174,11 @@ public class ActivityMenuVehicle extends AppCompatActivity {
     }
 
     public void showFillUpHistoryActions(){
-
+        Intent i = new Intent(this, ActivityShowFillUps.class);
+        Bundle b = new Bundle();
+        b.putLong("index", getIntent().getExtras().getLong("index"));
+        i.putExtras(b);
+        startActivity(i);
     }
     public void showExpensesActions(){
 
@@ -174,15 +193,37 @@ public class ActivityMenuVehicle extends AppCompatActivity {
         final EditText model        = (EditText) dialog.findViewById(R.id.DialogEditVehicleModel);
         final EditText name         = (EditText) dialog.findViewById(R.id.DialogEditVehicleName);
         final EditText year         = (EditText) dialog.findViewById(R.id.DialogEditVehicleYear);
+        final CheckBox check        = (CheckBox) dialog.findViewById(R.id.DialogEditVehiclecheckBoxRemove);
         Button confirmButton        = (Button)   dialog.findViewById(R.id.DialogEditVehicleButtonOK);
+
+        manufacturer.setText(selectedVehicle.getManufacturer());
+        model.setText(selectedVehicle.getModel());
+        name.setText(selectedVehicle.getName());
+        year.setText(selectedVehicle.getYear());
 
         confirmButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                selectedVehicle.setManufacturer(manufacturer.getText().toString());
+                selectedVehicle.setModel(model.getText().toString());
+                selectedVehicle.setName(name.getText().toString());
+                selectedVehicle.setYear(year.getText().toString());
+                if(check.isChecked())
+                    selectedVehicle.setStatus("-1");
+                ModelDataManager.getInstance().addOrUpdateVehicle(selectedVehicle);
                 dialog.dismiss();
+                if(selectedVehicle.getStatus().equals("-1")){
+                    startActivity(new Intent(ActivityMenuVehicle.this, ActivitySelectVehicle.class));
+                    ActivityMenuVehicle.this.finish();
+                }
             }
         });
 
         dialog.show();
+    }
+    @Override
+    public void onBackPressed() {
+        startActivity(new Intent(this, ActivitySelectVehicle.class));
+        finish();
     }
 }
