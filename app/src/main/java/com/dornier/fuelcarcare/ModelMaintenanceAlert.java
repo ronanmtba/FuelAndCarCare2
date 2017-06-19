@@ -31,7 +31,7 @@ public class ModelMaintenanceAlert {
         this.id               = id;
         this.kilometers       = kilometers;
         this.item             = item;
-        this.maintenance_date = ModelDataManager.StringToDate(date);
+        this.maintenance_date = ModelDataManager.stringToDate(date);
         this.car_id           = car_id;
         this.status           = status;
     }

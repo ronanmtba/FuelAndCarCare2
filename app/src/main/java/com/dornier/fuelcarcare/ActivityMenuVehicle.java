@@ -77,7 +77,7 @@ public class ActivityMenuVehicle extends AppCompatActivity {
         });
     }
 
-    public void addFillUpActions(){
+    private void addFillUpActions(){
         final Dialog dialog = new Dialog(ActivityMenuVehicle.this);
         dialog.setContentView(R.layout.dialog_add_fillup);
         dialog.setTitle("Adicionar abastecimento");
@@ -114,7 +114,7 @@ public class ActivityMenuVehicle extends AppCompatActivity {
         confirmButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                
+
                 ModelFillUp fill_up = new ModelFillUp(fillUpTotalPrice.getText().toString(),
                         fuelPrice.getText().toString(),
                         fillUpLiters.getText().toString(),
@@ -131,7 +131,7 @@ public class ActivityMenuVehicle extends AppCompatActivity {
         dialog.show();
     }
 
-    public void addMaintenanceActions(){
+    private void addMaintenanceActions(){
         final Dialog dialog = new Dialog(ActivityMenuVehicle.this);
         dialog.setContentView(R.layout.dialog_add_maintenance);
         dialog.setTitle("Adicionar alerta de manutenção");
@@ -153,7 +153,7 @@ public class ActivityMenuVehicle extends AppCompatActivity {
         dialog.show();
     }
 
-    public void addExpenseActions(){
+    private void addExpenseActions(){
         final Dialog dialog = new Dialog(ActivityMenuVehicle.this);
         dialog.setContentView(R.layout.dialog_add_expense);
         dialog.setTitle("Adicionar despesa");
@@ -177,7 +177,7 @@ public class ActivityMenuVehicle extends AppCompatActivity {
         dialog.show();
     }
 
-    public void showFillUpHistoryActions(){
+    private void showFillUpHistoryActions(){
         if(selectedVehicle.getFillUps().size() > 1) {
             Intent i = new Intent(this, ActivityShowFillUps.class);
             Bundle b = new Bundle();
@@ -190,11 +190,11 @@ public class ActivityMenuVehicle extends AppCompatActivity {
         }
     }
 
-    public void showExpensesActions(){
+    private void showExpensesActions(){
 
     }
 
-    public void editVehicleActions(){
+    private void editVehicleActions(){
         final Dialog dialog = new Dialog(ActivityMenuVehicle.this);
         dialog.setContentView(R.layout.dialog_edit_vehicle);
         dialog.setTitle("Editar veiculo");

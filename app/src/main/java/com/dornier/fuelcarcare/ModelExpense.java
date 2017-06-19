@@ -33,7 +33,7 @@ public class ModelExpense {
         this.price          = Double.parseDouble(price);
         this.quantity       = Double.parseDouble(quantity);
         this.componentName  = componentName;
-        this.date           = ModelDataManager.StringToDate(date);
+        this.date           = ModelDataManager.stringToDate(date);
         this.car_id         = car_id;
         this.status         = status;
     }

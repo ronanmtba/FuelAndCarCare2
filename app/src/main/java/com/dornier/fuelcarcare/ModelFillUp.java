@@ -40,7 +40,7 @@ public class ModelFillUp {
         this.fuelPrice  = Double.parseDouble(fuelPrice);
         this.fuelAmount = Double.parseDouble(fuelAmount);
         this.location   = location;
-        this.date       = ModelDataManager.StringToDate(date);
+        this.date       = ModelDataManager.stringToDate(date);
         this.fuel       = fuel;
         this.id         = id;
         this.car_id     = car_id;
@@ -54,7 +54,7 @@ public class ModelFillUp {
         this.fuelPrice  = Double.parseDouble(fuelPrice);
         this.fuelAmount = Double.parseDouble(fuelAmount);
         this.location   = location;
-        this.date       = ModelDataManager.StringToDate(date);
+        this.date       = ModelDataManager.stringToDate(date);
         this.fuel       = fuel;
         this.id         = "0";
         this.car_id     = car_id;

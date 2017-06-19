@@ -50,7 +50,7 @@ public class ActivitySelectVehicle extends AppCompatActivity {
 
     }
 
-    public void addCarActions(){
+    private void addCarActions(){
         AlertDialog.Builder alert = new AlertDialog.Builder(this);
         final EditText edittext = new EditText(ActivitySelectVehicle.this);
         edittext.setInputType(InputType.TYPE_TEXT_VARIATION_PERSON_NAME);
@@ -72,7 +72,7 @@ public class ActivitySelectVehicle extends AppCompatActivity {
         alert.show();
     }
 
-    public void selectCarActions(int optionSelected){
+    private void selectCarActions(int optionSelected){
         Intent i = new Intent(this, ActivityMenuVehicle.class);
         Bundle b = new Bundle();
         b.putLong("index", optionSelected);

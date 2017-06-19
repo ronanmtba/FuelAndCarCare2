@@ -230,7 +230,7 @@ public class ModelDataManager {
         return reportDate;
     }
 
-    public static Date StringToDate(String string) {
+    public static Date stringToDate(String string) {
         DateFormat format = new SimpleDateFormat("dd/MM/yyyy", Locale.CANADA);
         if(string.length() > 11)
             format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.CANADA);

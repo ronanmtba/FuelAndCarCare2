@@ -56,7 +56,7 @@ public class ActivityShowFillUps extends AppCompatActivity {
         lineChart.animateY(5000);
     }
 
-    public int getFuelColor(ModelFillUp fill_up){
+    private int getFuelColor(ModelFillUp fill_up){
         int colorToReturn = 0;
         switch (fill_up.getFuel()){
             case "Gasolina":
