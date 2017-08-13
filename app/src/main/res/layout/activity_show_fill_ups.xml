@@ -1,5 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView android:layout_height="match_parent"
+    android:layout_width="match_parent"
+
+    xmlns:android="http://schemas.android.com/apk/res/android">
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:background="#ffffff"
@@ -9,12 +13,71 @@
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
+    android:orientation="vertical"
     tools:context="com.dornier.fuelcarcare.ActivityShowFillUps">
 
     <com.github.mikephil.charting.charts.LineChart
         android:id="@+id/ShowFillUpsChart"
-        android:layout_width="match_parent"
+        android:layout_width="272dp"
         android:layout_height="300dp"
         />
 
-</android.support.constraint.ConstraintLayout>
+    <TextView
+        android:id="@+id/ShowFillUpsTotalPrice"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textColor="#000"/>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/ShowFillUpsFuelPrice"
+        android:textColor="#000"/>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/ShowFillUpsLiters"
+        android:hint="@string/fuel_amount"
+        android:textColor="#000"/>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/ShowFillUpsKilometers"
+        android:hint="@string/kilometers_actual"
+        android:textColor="#000"/>
+
+    <TextView
+        android:id="@+id/ShowFillUpsLocation"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textColor="#000"/>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/ShowFillUpsDate"
+        android:textColor="#000"/>
+
+    <TextView
+        android:id="@+id/ShowFillUpsFuel"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:entries="@array/fuel_arrays"
+        android:textColor="#000"
+        />
+
+    <Button
+        android:id="@+id/ShowFillUpsDelete"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/delete"
+        android:textColor="#fff"
+        android:background="#0a445c"
+        />
+
+
+
+</LinearLayout>
+</ScrollView>

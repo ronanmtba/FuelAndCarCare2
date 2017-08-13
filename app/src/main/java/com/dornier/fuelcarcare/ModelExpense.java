@@ -16,6 +16,17 @@ public class ModelExpense {
     private String car_id;
     private String status;
 
+    public ModelExpense(String price, String quantity, String componentName, String date, String car_id, String status){
+        this.local_id = 0;
+        this.id = "0";
+        this.price      = Double.parseDouble(price);
+        this.quantity   = Double.parseDouble(quantity);
+        this.componentName = componentName;
+        this.date = ModelDataManager.stringToDate(date);
+        this.car_id = car_id;
+        this.status = status;
+    }
+
     public ModelExpense(long local_id, String id, double price, double quantity, String componentName, Date date, String car_id, String status) {
         this.local_id       = local_id;
         this.id             = id;

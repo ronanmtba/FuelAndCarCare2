@@ -17,7 +17,7 @@ public class ModelDBAdapter {
     private SQLiteDatabase database;
     private static ModelDBAdapter singleton;
     private ModelDBManager dbManager;
-    private String[] fill_ups_oolumns = {
+    private String[] fill_ups_columns = {
             dbManager.fill_ups_local_id,
             dbManager.fill_ups_id,
             dbManager.fill_ups_car_id,
@@ -152,8 +152,13 @@ public class ModelDBAdapter {
         values.put(ModelDBManager.fill_ups_status,      fillUp.getStatus());
         values.put(ModelDBManager.fill_ups_kilometers,  fillUp.getKilometers());
 
+        if(fillUp.getLocal_id() > 0){
+            database.update(ModelDBManager.table_name_fill_ups,values,ModelDBManager.fill_ups_local_id+"="+fillUp.getLocal_id(), null);
+            return fillUp;
+        }
+
         long insertId = database.insert(ModelDBManager.table_name_fill_ups, null, values);
-        Cursor cursor = database.query(ModelDBManager.table_name_fill_ups, fill_ups_oolumns, ModelDBManager.fill_ups_local_id + " = " +
+        Cursor cursor = database.query(ModelDBManager.table_name_fill_ups, fill_ups_columns, ModelDBManager.fill_ups_local_id + " = " +
                 insertId, null,null, null, null);
         cursor.moveToFirst();
         return cursorToFillUp(cursor);
@@ -184,7 +189,7 @@ public class ModelDBAdapter {
     }
 
     public ModelFillUp getFillUp (long idFillUp){
-        Cursor cursor = database.query(ModelDBManager.table_name_fill_ups, fill_ups_oolumns, ModelDBManager.fill_ups_local_id + " = " +
+        Cursor cursor = database.query(ModelDBManager.table_name_fill_ups, fill_ups_columns, ModelDBManager.fill_ups_local_id + " = " +
                 idFillUp, null,null, null, null);
         cursor.moveToFirst();
         return cursorToFillUp(cursor);

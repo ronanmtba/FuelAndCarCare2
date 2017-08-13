@@ -1,6 +1,9 @@
 package com.dornier.fuelcarcare;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Date;
 
 /**
  * Created by Dornier on 16/03/2017.
@@ -42,6 +45,57 @@ public class ModelVehicle {
         this.alerts         = new ArrayList<ModelMaintenanceAlert>();
         this.fillUps        = new ArrayList<ModelFillUp>();
         this.expenses       = new ArrayList<ModelExpense>();
+    }
+
+    public void sortExpenses(){
+        Collections.sort(expenses, new Comparator<ModelExpense>() {
+            @Override
+            public int compare(ModelExpense obj2, ModelExpense obj1)
+            {
+                Date a = obj1.getDate();
+                Date b = obj2.getDate();
+                if (a.before(b))
+                    return 1;
+                else if (a.after(b))
+                    return -1;
+                else
+                    return 0;
+            }
+        });
+    }
+
+    public void sortfillUps(){
+        Collections.sort(fillUps, new Comparator<ModelFillUp>() {
+            @Override
+            public int compare(ModelFillUp obj2, ModelFillUp obj1)
+            {
+                int a = obj1.getKilometers();
+                int b = obj2.getKilometers();
+                if (a < b)
+                    return 1;
+                else if (a > b)
+                    return -1;
+                else
+                    return 0;
+            }
+        });
+    }
+
+    public void sortAlerts(){
+        Collections.sort(alerts, new Comparator<ModelMaintenanceAlert>() {
+            @Override
+            public int compare(ModelMaintenanceAlert obj2, ModelMaintenanceAlert obj1)
+            {
+                Date a = obj1.getMaintenance_date();
+                Date b = obj2.getMaintenance_date();
+                if (a.before(b))
+                    return 1;
+                else if (a.after(b))
+                    return -1;
+                else
+                    return 0;
+            }
+        });
     }
 
     public long getLocal_id() {
@@ -108,7 +162,16 @@ public class ModelVehicle {
         return alerts;
     }
 
-    public ArrayList<ModelFillUp> getFillUps() {
+    public ArrayList<ModelFillUp> getFilteredFillUps() {
+        final ArrayList<ModelFillUp> toReturn = new ArrayList<ModelFillUp>();
+        for(ModelFillUp fillUp: fillUps){
+            if(Integer.parseInt(fillUp.getStatus()) >= 0)
+                toReturn.add(fillUp);
+        }
+        return toReturn;
+    }
+
+    public ArrayList<ModelFillUp> getAllFillUps() {
         return fillUps;
     }
 

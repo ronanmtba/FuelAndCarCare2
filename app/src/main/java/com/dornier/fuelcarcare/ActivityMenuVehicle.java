@@ -2,10 +2,8 @@ package com.dornier.fuelcarcare;
 
 import android.app.Dialog;
 import android.content.Intent;
-import android.support.annotation.FloatRange;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.view.Display;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -16,10 +14,6 @@ import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
-
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
 
 public class ActivityMenuVehicle extends AppCompatActivity {
 
@@ -123,7 +117,7 @@ public class ActivityMenuVehicle extends AppCompatActivity {
                         fuel.getSelectedItem().toString(),
                         selectedVehicle.getLocal_id()+"",
                         kilometers.getText().toString());
-                ModelDataManager.getInstance().addFillUp(selectedVehicle, fill_up);
+                ModelDataManager.getInstance().addOrUpdateFillUp(selectedVehicle, fill_up);
                 dialog.dismiss();
             }
         });
@@ -158,7 +152,6 @@ public class ActivityMenuVehicle extends AppCompatActivity {
         dialog.setContentView(R.layout.dialog_add_expense);
         dialog.setTitle("Adicionar despesa");
 
-        // set the custom dialog components - text, image and button
         final EditText item         = (EditText) dialog.findViewById(R.id.DialogExpenseComponentName);
         final EditText date         = (EditText) dialog.findViewById(R.id.DialogExpenseDate);
         final EditText price        = (EditText) dialog.findViewById(R.id.DialogExpensePrice);
@@ -170,6 +163,10 @@ public class ActivityMenuVehicle extends AppCompatActivity {
         confirmButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                ModelExpense expense = new ModelExpense(price.getText().toString(),
+                        quantity.getText().toString(), item.getText().toString(),
+                        date.getText().toString(), Long.toString(selectedVehicle.getLocal_id()), "0");
+                ModelDataManager.getInstance().addExpense(selectedVehicle,expense);
                 dialog.dismiss();
             }
         });
@@ -178,7 +175,7 @@ public class ActivityMenuVehicle extends AppCompatActivity {
     }
 
     private void showFillUpHistoryActions(){
-        if(selectedVehicle.getFillUps().size() > 1) {
+        if(selectedVehicle.getFilteredFillUps().size() > 1) {
             Intent i = new Intent(this, ActivityShowFillUps.class);
             Bundle b = new Bundle();
             b.putLong("index", getIntent().getExtras().getLong("index"));
@@ -191,7 +188,16 @@ public class ActivityMenuVehicle extends AppCompatActivity {
     }
 
     private void showExpensesActions(){
-
+        if(selectedVehicle.getExpenses().size() > 0) {
+            Intent i = new Intent(this, ActivityShowExpenses.class);
+            Bundle b = new Bundle();
+            b.putLong("index", getIntent().getExtras().getLong("index"));
+            i.putExtras(b);
+            startActivity(i);
+        }
+        else{
+            Toast.makeText(this,"Precisamos de ao menos 1 despesa cadastrada para apresentar o gráfico.", Toast.LENGTH_LONG).show();
+        }
     }
 
     private void editVehicleActions(){

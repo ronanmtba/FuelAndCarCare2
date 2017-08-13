@@ -20,7 +20,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:id="@+id/DialogExpensePrice"
-            android:hint="@string/price"
+            android:hint="@string/final_price"
             android:inputType="numberDecimal"
             />
 

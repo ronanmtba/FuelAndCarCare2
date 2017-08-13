@@ -1,7 +1,6 @@
 package com.dornier.fuelcarcare;
 
 import android.content.Context;
-import android.support.annotation.NonNull;
 import android.text.TextUtils;
 import android.util.Log;
 
@@ -271,7 +270,7 @@ public class ModelDataManager {
             for(ModelFillUp fill: fill_ups){
                 long car_id = Long.parseLong(fill.getCar_id());
                 if(car_id == vehicle.getLocal_id()){
-                    vehicle.getFillUps().add(fill);
+                    vehicle.getAllFillUps().add(fill);
                     //fill_ups.remove(fill);
                 }
             }
@@ -296,8 +295,12 @@ public class ModelDataManager {
         vehicles.add(ModelDBAdapter.getInstance(actualContext).insertVehicle(vehicle));
     }
 
-    public void addFillUp(ModelVehicle vehicle, ModelFillUp fill_up){
-        vehicle.getFillUps().add(ModelDBAdapter.getInstance(actualContext).insertFillUp(fill_up));
+    public void addOrUpdateFillUp(ModelVehicle vehicle, ModelFillUp fill_up){
+        vehicle.getAllFillUps().add(ModelDBAdapter.getInstance(actualContext).insertFillUp(fill_up));
+    }
+
+    public void addExpense(ModelVehicle vehicle, ModelExpense expense){
+        vehicle.getExpenses().add(ModelDBAdapter.getInstance(actualContext).insertExpense(expense));
     }
 
 }

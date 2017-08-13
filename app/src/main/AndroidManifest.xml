@@ -20,7 +20,8 @@
         <activity android:name=".ActivitySelectVehicle" />
         <activity android:name=".ActivityMenuVehicle" />
         <activity android:name=".ActivityRegister" />
-        <activity android:name=".ActivityShowFillUps"></activity>
+        <activity android:name=".ActivityShowFillUps" />
+        <activity android:name=".ActivityShowExpenses"></activity>
     </application>
 
 </manifest>
