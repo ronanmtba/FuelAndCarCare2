@@ -299,7 +299,7 @@ public class ModelDataManager {
         vehicle.getAllFillUps().add(ModelDBAdapter.getInstance(actualContext).insertFillUp(fill_up));
     }
 
-    public void addExpense(ModelVehicle vehicle, ModelExpense expense){
+    public void addOrUpdateExpense(ModelVehicle vehicle, ModelExpense expense){
         vehicle.getExpenses().add(ModelDBAdapter.getInstance(actualContext).insertExpense(expense));
     }
 

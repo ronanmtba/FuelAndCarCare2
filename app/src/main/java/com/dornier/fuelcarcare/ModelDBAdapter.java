@@ -88,6 +88,11 @@ public class ModelDBAdapter {
         values.put(ModelDBManager.expenses_status,          expense.getStatus());
         values.put(ModelDBManager.expenses_price,           expense.getPrice());
 
+        if(expense.getLocal_id() > 0){
+            database.update(ModelDBManager.table_name_expenses,values,ModelDBManager.expenses_local_id+"="+expense.getLocal_id(), null);
+            return expense;
+        }
+
         long insertId = database.insert(ModelDBManager.table_name_expenses, null, values);
         Cursor cursor = database.query(ModelDBManager.table_name_expenses, expenses_columns, ModelDBManager.expenses_local_id + " = " +
                 insertId, null,null, null, null);

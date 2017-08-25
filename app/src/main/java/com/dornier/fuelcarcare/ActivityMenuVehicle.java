@@ -166,7 +166,7 @@ public class ActivityMenuVehicle extends AppCompatActivity {
                 ModelExpense expense = new ModelExpense(price.getText().toString(),
                         quantity.getText().toString(), item.getText().toString(),
                         date.getText().toString(), Long.toString(selectedVehicle.getLocal_id()), "0");
-                ModelDataManager.getInstance().addExpense(selectedVehicle,expense);
+                ModelDataManager.getInstance().addOrUpdateExpense(selectedVehicle,expense);
                 dialog.dismiss();
             }
         });

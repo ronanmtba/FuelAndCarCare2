@@ -1,12 +1,23 @@
 package com.dornier.fuelcarcare;
 
+import android.content.DialogInterface;
+import android.graphics.Color;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.LinearLayout;
+import android.widget.TextView;
+import android.view.ViewGroup.LayoutParams;
 
 import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
+import com.github.mikephil.charting.highlight.Highlight;
+import com.github.mikephil.charting.listener.OnChartValueSelectedListener;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -17,8 +28,9 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-public class ActivityShowExpenses extends AppCompatActivity{
+public class ActivityShowExpenses extends AppCompatActivity implements OnChartValueSelectedListener {
     ModelVehicle selectedVehicle;
+    JSONArray monthsAndData;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -32,13 +44,20 @@ public class ActivityShowExpenses extends AppCompatActivity{
         ArrayList<Entry> entries = new ArrayList<>();
         ArrayList<String> labels = new ArrayList<String>();
 
-        Map<String, Double> monthsAndData = getMonthsAndData();
+        monthsAndData = expensesAndValues(selectedVehicle.getExpenses());
 
-        int counter = 0;
-        for ( String key : monthsAndData.keySet() ) {
-            entries.add(new Entry(monthsAndData.get(key).floatValue(), counter));
-            labels.add(key);
-            counter++;
+        try {
+
+            for (int i = 0; i < monthsAndData.length(); i++) {
+                JSONObject obj = (JSONObject) monthsAndData.get(i);
+                entries.add(new Entry(((Double)obj.get("value")).floatValue(), i, obj.get("expenses")));
+                Date date = (Date)obj.get("date");
+                String dateInString = ModelDataManager.dateToString(date).substring(3);
+                labels.add(dateInString);
+            }
+        }
+        catch (JSONException e){
+
         }
 
         LineDataSet dataset = new LineDataSet(entries, "Gasto mensal");
@@ -49,22 +68,122 @@ public class ActivityShowExpenses extends AppCompatActivity{
         lineChart.setDescription("");
         lineChart.setData(data);
         lineChart.animateY(2000);
+        lineChart.setOnChartValueSelectedListener(this);
     }
 
-    private Map<String, Double> getMonthsAndData(){
-        ArrayList<ModelExpense> expenses = selectedVehicle.getExpenses();
-        Map<String, Double> toReturn = new HashMap<String, Double>();
-        for(ModelExpense expense: expenses){
-            Date date = expense.getDate();
-            String dateInString = ModelDataManager.dateToString(date);
-            dateInString = dateInString.substring(3);
-            if(toReturn.containsKey(dateInString)){
-                toReturn.put(dateInString, toReturn.get(dateInString) + expense.getPrice());
+
+
+    public JSONArray expensesAndValues(ArrayList<ModelExpense> expenses){
+        try {
+            JSONArray toReturn = new JSONArray();
+            JSONObject item = new JSONObject();
+
+            for(int i = 0; i < expenses.size(); i++){
+                if(Integer.parseInt(expenses.get(i).getStatus()) >= 0) {
+                    if(item.length() == 0){
+                        item.put("value", expenses.get(i).getPrice());
+                        item.put("date", expenses.get(i).getDate());
+                        item.put("expenses", new ArrayList<ModelExpense>());
+                        ((ArrayList<ModelExpense>) item.get("expenses")).add(expenses.get(i));
+                    }
+                    else if (
+                            (expenses.get(i).getDate().getMonth() == ((Date)item.get("date")).getMonth())
+                                    &&
+                                    (expenses.get(i).getDate().getYear() == ((Date)item.get("date")).getYear())
+                            ) {
+                        ((ArrayList<ModelExpense>) item.get("expenses")).add(expenses.get(i));
+                        item.put("value", (double) item.get("value") + expenses.get(i).getPrice());
+                    } else {
+                        toReturn.put(item);
+                        item = new JSONObject();
+
+                        item.put("value", expenses.get(i).getPrice());
+                        item.put("date", expenses.get(i).getDate());
+                        item.put("expenses", new ArrayList<ModelExpense>());
+                        ((ArrayList<ModelExpense>) item.get("expenses")).add(expenses.get(i));
+                    }
+                }
             }
-            else{
-                toReturn.put(dateInString, expense.getPrice());
-            }
+            toReturn.put(item);
+            return toReturn;
+
+        } catch (JSONException e) {
+            e.printStackTrace();
         }
-        return toReturn;
+        return null;
+
+
+    }
+
+    @Override
+    public void onValueSelected(Entry e, int dataSetIndex, Highlight h) {
+        View linearLayout =  findViewById(R.id.ShowExpensesChartLL);
+        ((LinearLayout)linearLayout).removeAllViews();
+
+        ArrayList<ModelExpense> expenses = (ArrayList<ModelExpense>) e.getData();
+        for(final ModelExpense expense: expenses){
+            printOnScreen("***",linearLayout);
+            printOnScreen("Nome: " + expense.getComponentName(),linearLayout);
+            printOnScreen("Quantidade: " + expense.getQuantity(), linearLayout);
+            printOnScreen("Valor final: " + expense.getPrice(),linearLayout);
+            printOnScreen("Data: " + ModelDataManager.dateToString(expense.getDate()),linearLayout);
+
+            //Creates remove button
+            Button buttonRemove = new Button(this);
+            buttonRemove.setText("remover");
+            buttonRemove.setLayoutParams(new LayoutParams(
+                    ViewGroup.LayoutParams.WRAP_CONTENT,
+                    ViewGroup.LayoutParams.WRAP_CONTENT));
+            ((LinearLayout)linearLayout).addView(buttonRemove);
+            buttonRemove.setTextColor(Color.parseColor("#ffffff"));
+            buttonRemove.setBackgroundColor(Color.parseColor("#0a445c"));
+            buttonRemove.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    AlertDialog.Builder builder = new AlertDialog.Builder(ActivityShowExpenses.this);
+                    builder.setCancelable(true);
+                    builder.setTitle("Atenção");
+                    builder.setMessage("Deseja mesmo excluir a despesa selecionada?");
+                    builder.setPositiveButton("Sim",
+                            new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    onConfirmDelete(expense);
+                                }
+                            });
+                    builder.setNegativeButton("Não", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                        }
+                    });
+                    AlertDialog dialog = builder.create();
+                    dialog.show();
+                }
+            });
+        }
+    }
+
+
+
+
+
+    public void onConfirmDelete(ModelExpense expense){
+        expense.setStatus("-1");
+        ModelDataManager.getInstance().addOrUpdateExpense(selectedVehicle,expense);
+        finish();
+    }
+
+    public void printOnScreen(String text, View view){
+        TextView valueTV = new TextView(this);
+        valueTV.setText(text);
+        valueTV.setTextColor(Color.BLACK);
+        valueTV.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT,LayoutParams.WRAP_CONTENT));
+
+        ((LinearLayout) view).addView(valueTV);
+    }
+
+    @Override
+    public void onNothingSelected() {
+
     }
 }

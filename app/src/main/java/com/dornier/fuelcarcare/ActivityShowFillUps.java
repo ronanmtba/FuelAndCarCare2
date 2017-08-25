@@ -57,8 +57,8 @@ public class ActivityShowFillUps extends AppCompatActivity implements OnChartVal
 
         int colors[] = new int[fillUps.size()];
 
-        entries.add(new Entry(0.0f,0));
-        labels.add(ModelDataManager.dateToString(fillUps.get(0).getDate()));
+        //entries.add(new Entry(0.0f,0));
+        //labels.add(ModelDataManager.dateToString(fillUps.get(0).getDate()));
         colors[0] = getFuelColor(fillUps.get(0));
 
         for(int i = 1; i < fillUps.size(); i++){
@@ -66,7 +66,7 @@ public class ActivityShowFillUps extends AppCompatActivity implements OnChartVal
             ModelFillUp previous = fillUps.get(i-1);
             float distance = tempFillUp.getKilometers()-(float)previous.getKilometers();
             float consumption = (float) (distance/tempFillUp.getFuelAmount());
-            entries.add(new Entry(consumption,i,tempFillUp));
+            entries.add(new Entry(consumption,i-1,tempFillUp));
             labels.add(ModelDataManager.dateToString(tempFillUp.getDate()));
             colors[i] = getFuelColor(tempFillUp);
         }
@@ -127,7 +127,7 @@ public class ActivityShowFillUps extends AppCompatActivity implements OnChartVal
     }
 
     public void onConfirmDelete(){
-        selectedVehicle.setStatus("-1");
+        selectedFillUp.setStatus("-1");
         ModelDataManager.getInstance().addOrUpdateFillUp(selectedVehicle, selectedFillUp);
         finish();
         //startActivity(new Intent(ActivityShowFillUps.this, ActivityMenuVehicle.class));
