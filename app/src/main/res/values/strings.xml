@@ -22,6 +22,7 @@
     <string name="manufacturer">Montadora</string>
     <string name="model">Modelo</string>
     <string name="year">Ano</string>
+    <string name="year_model">Ano/modelo</string>
     <string name="delete">Deletar</string>
 
     <string name="fuel_prompt">Escolha o combustivel</string>

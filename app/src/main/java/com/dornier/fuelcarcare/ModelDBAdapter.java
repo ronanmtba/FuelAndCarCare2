@@ -289,6 +289,11 @@ public class ModelDBAdapter {
         values.put(ModelDBManager.maintenances_car_id,          maintenance.getCar_id());
         values.put(ModelDBManager.maintenances_status,          maintenance.getStatus());
 
+        if(maintenance.getLocal_id() > 0){
+            database.update(ModelDBManager.table_name_maintenances,values,ModelDBManager.maintenances_local_id+"="+maintenance.getLocal_id(), null);
+            return maintenance;
+        }
+
         long insertId = database.insert(ModelDBManager.table_name_maintenances, null, values);
         Cursor cursor = database.query(ModelDBManager.table_name_maintenances, maintenance_columns, ModelDBManager.maintenances_local_id + " = " +
                 insertId, null,null, null, null);

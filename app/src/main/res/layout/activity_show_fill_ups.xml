@@ -23,6 +23,12 @@
         />
 
     <TextView
+        android:id="@+id/ShowFillUpsConsumption"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textColor="#000"/>
+
+    <TextView
         android:id="@+id/ShowFillUpsTotalPrice"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

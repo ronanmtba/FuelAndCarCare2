@@ -3,6 +3,8 @@
     package="com.dornier.fuelcarcare">
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    <uses-permission android:name="com.android.alarm.permission.SET_ALARM"/>
 
     <application
         android:allowBackup="true"
@@ -21,7 +23,15 @@
         <activity android:name=".ActivityMenuVehicle" />
         <activity android:name=".ActivityRegister" />
         <activity android:name=".ActivityShowFillUps" />
-        <activity android:name=".ActivityShowExpenses"></activity>
+        <activity android:name=".ActivityShowExpenses" />
+        <activity android:name=".ActivityShowAlerts"></activity>
+        <receiver android:name=".ModelAlarmReceiver">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <action android:name="android.intent.action.QUICKBOOT_POWERON" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </receiver>
     </application>
 
 </manifest>

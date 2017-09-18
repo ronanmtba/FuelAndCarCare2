@@ -20,7 +20,7 @@ import java.util.ArrayList;
 
 public class ActivityShowFillUps extends AppCompatActivity implements OnChartValueSelectedListener{
     ModelVehicle selectedVehicle;
-    TextView total_price, fuel_price, liters, kilometers, location, date, fuel;
+    TextView total_price, fuel_price, liters, kilometers, location, date, fuel, consumption;
     LineChart lineChart;
     Button delete;
     ModelFillUp selectedFillUp;
@@ -29,6 +29,7 @@ public class ActivityShowFillUps extends AppCompatActivity implements OnChartVal
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_show_fill_ups);
+        ModelDataManager.getInstance().setActualContext(ActivityShowFillUps.this);
 
         int selectedVehicleIndex = (int) getIntent().getExtras().getLong("index");
         selectedVehicle = ModelDataManager.getInstance().getVehicles().get(selectedVehicleIndex);
@@ -42,6 +43,7 @@ public class ActivityShowFillUps extends AppCompatActivity implements OnChartVal
         location    = (TextView) findViewById(R.id.ShowFillUpsLocation);
         date        = (TextView) findViewById(R.id.ShowFillUpsDate);
         fuel        = (TextView) findViewById(R.id.ShowFillUpsFuel);
+        consumption = (TextView) findViewById(R.id.ShowFillUpsConsumption);
         delete      = (Button)   findViewById(R.id.ShowFillUpsDelete);
         delete.setVisibility(View.INVISIBLE);
         delete.setOnClickListener(new View.OnClickListener() {
@@ -68,7 +70,7 @@ public class ActivityShowFillUps extends AppCompatActivity implements OnChartVal
             float consumption = (float) (distance/tempFillUp.getFuelAmount());
             entries.add(new Entry(consumption,i-1,tempFillUp));
             labels.add(ModelDataManager.dateToString(tempFillUp.getDate()));
-            colors[i] = getFuelColor(tempFillUp);
+            colors[i] = getFuelColor(previous);
         }
 
         LineDataSet dataset = new LineDataSet(entries, "Consumo");
@@ -78,6 +80,7 @@ public class ActivityShowFillUps extends AppCompatActivity implements OnChartVal
         //dataset.setDrawCubic(true);
         dataset.setCircleColors(colors);
         dataset.setDrawFilled(true);
+        dataset.setDrawValues(false);
         lineChart.setOnChartValueSelectedListener(this);
 
         lineChart.setDescription("");
@@ -139,6 +142,7 @@ public class ActivityShowFillUps extends AppCompatActivity implements OnChartVal
         try {
             selectedFillUp = (ModelFillUp) e.getData();
             if(selectedFillUp != null) {
+                consumption.setText("Consumo: " + e.getVal());
                 total_price.setText("Valor total: " + selectedFillUp.getFinalPrice());
                 fuel_price.setText("Preço: " + selectedFillUp.getFuelPrice());
                 liters.setText("Quantidade: " + selectedFillUp.getFuelAmount());

@@ -1,6 +1,9 @@
 package com.dornier.fuelcarcare;
 
+import android.app.AlarmManager;
+import android.app.PendingIntent;
 import android.content.Context;
+import android.content.Intent;
 import android.text.TextUtils;
 import android.util.Log;
 
@@ -23,6 +26,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
@@ -37,7 +41,7 @@ public class ModelDataManager {
     private static ModelDataManager singleton;
     private Boolean sessionStart;
     private static final String TAG = ModelDataManager.class.getSimpleName();
-    ArrayList<ModelVehicle> vehicles;
+    private ArrayList<ModelVehicle> vehicles;
 
 
     public Context getActualContext() {
@@ -277,7 +281,7 @@ public class ModelDataManager {
             for(ModelMaintenanceAlert alert: alerts){
                 long car_id = Long.parseLong(alert.getCar_id());
                 if(car_id == vehicle.getLocal_id()){
-                    vehicle.getAlerts().add(alert);
+                    vehicle.getAllAlerts().add(alert);
                     //alerts.remove(alert);
                 }
             }
@@ -292,15 +296,56 @@ public class ModelDataManager {
     }
 
     public void addOrUpdateVehicle(ModelVehicle vehicle){
+        ModelDataManager.getInstance().getVehicles().remove(vehicle);
         vehicles.add(ModelDBAdapter.getInstance(actualContext).insertVehicle(vehicle));
     }
 
     public void addOrUpdateFillUp(ModelVehicle vehicle, ModelFillUp fill_up){
+        vehicle.getAllFillUps().remove(fill_up);
         vehicle.getAllFillUps().add(ModelDBAdapter.getInstance(actualContext).insertFillUp(fill_up));
+        //Verifies if there is any alert to show
+        ArrayList<ModelMaintenanceAlert> alerts = vehicle.getFilteredAlerts();
+        for(ModelMaintenanceAlert alert: alerts){
+            if(Integer.parseInt(alert.getKilometers()) < fill_up.getKilometers()){
+                alert.setMaintenance_date(new Date());
+                addOrUpdateMaintenance(vehicle,alert);
+            }
+        }
     }
 
     public void addOrUpdateExpense(ModelVehicle vehicle, ModelExpense expense){
+        vehicle.getExpenses().remove(expense);
         vehicle.getExpenses().add(ModelDBAdapter.getInstance(actualContext).insertExpense(expense));
+    }
+
+    public void addOrUpdateMaintenance(ModelVehicle vehicle, ModelMaintenanceAlert alert){
+        vehicle.getAllAlerts().remove(alert);
+        vehicle.getAllAlerts().add(ModelDBAdapter.getInstance(actualContext).insertMaintenance(alert));
+        scheduleAlert(vehicle, alert);
+    }
+
+
+    /*****************/
+    /* Alarm Manager */
+    /*****************/
+
+    public void scheduleAlert(ModelVehicle vehicle, ModelMaintenanceAlert alert)
+    {
+
+        GregorianCalendar gc = new GregorianCalendar();
+        gc.setTime(alert.getMaintenance_date());
+        Long time = gc.getTimeInMillis()+5000;
+
+        Intent intentAlarm = new Intent(this.actualContext, ModelAlarmReceiver.class);
+        intentAlarm.putExtra("notification", "Manutenção agendada");
+        intentAlarm.putExtra("detail", "Revisar item " + alert.getItem() +
+                ", no veiculo " + vehicle.getName() );
+        intentAlarm.putExtra("vehicle_id", vehicle.getLocal_id());
+        intentAlarm.putExtra("alert_id", alert.getLocal_id());
+
+        AlarmManager alarmManager = (AlarmManager) actualContext.getSystemService(Context.ALARM_SERVICE);
+        alarmManager.set(AlarmManager.RTC_WAKEUP,time, PendingIntent.getBroadcast(actualContext,(int)alert.getLocal_id(),  intentAlarm, PendingIntent.FLAG_UPDATE_CURRENT));
+
     }
 
 }

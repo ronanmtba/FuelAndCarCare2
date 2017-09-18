@@ -35,7 +35,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:id="@+id/DialogEditVehicleYear"
-            android:hint="@string/year"
+            android:hint="@string/year_model"
             android:inputType="number"
             />
 

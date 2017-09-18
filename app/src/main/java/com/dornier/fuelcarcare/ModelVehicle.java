@@ -158,8 +158,17 @@ public class ModelVehicle {
         this.year = year;
     }
 
-    public ArrayList<ModelMaintenanceAlert> getAlerts() {
+    public ArrayList<ModelMaintenanceAlert> getAllAlerts() {
         return alerts;
+    }
+
+    public ArrayList<ModelMaintenanceAlert> getFilteredAlerts() {
+        final ArrayList<ModelMaintenanceAlert> toReturn = new ArrayList<ModelMaintenanceAlert>();
+        for(ModelMaintenanceAlert alert: alerts){
+            if(Integer.parseInt(alert.getStatus()) >= 0)
+                toReturn.add(alert);
+        }
+        return toReturn;
     }
 
     public ArrayList<ModelFillUp> getFilteredFillUps() {

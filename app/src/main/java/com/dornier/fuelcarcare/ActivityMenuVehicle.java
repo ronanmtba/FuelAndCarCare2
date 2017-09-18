@@ -1,6 +1,8 @@
 package com.dornier.fuelcarcare;
 
+import android.app.DatePickerDialog;
 import android.app.Dialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -9,11 +11,16 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Locale;
 
 public class ActivityMenuVehicle extends AppCompatActivity {
 
@@ -37,6 +44,7 @@ public class ActivityMenuVehicle extends AppCompatActivity {
                 "Adicionar despesa",
                 "Histórico consumo",
                 "Consultar despesas",
+                "Consultar alertas",
                 "Editar veiculo",
         };
 
@@ -65,7 +73,11 @@ public class ActivityMenuVehicle extends AppCompatActivity {
                         showExpensesActions();
                         break;
                     case 5:
+                        showAlertsActions();
+                        break;
+                    case 6:
                         editVehicleActions();
+                        break;
                 }
             }
         });
@@ -82,11 +94,41 @@ public class ActivityMenuVehicle extends AppCompatActivity {
         final EditText fillUpLiters       = (EditText) dialog.findViewById(R.id.DialogFillUpLiters);
         final EditText location           = (EditText) dialog.findViewById(R.id.DialogFillUpLocation);
         final EditText kilometers         = (EditText) dialog.findViewById(R.id.DialogFillUpKilometers);
-        final EditText date               = (EditText) dialog.findViewById(R.id.DialogFillUpDate);
+        final EditText dateField          = (EditText) dialog.findViewById(R.id.DialogFillUpDate);
         final Spinner  fuel               = (Spinner)  dialog.findViewById(R.id.DialogFillUpFuel);
         Button   confirmButton      = (Button)   dialog.findViewById(R.id.DialogFillUpButtonOK);
 
-        date.setText(ModelDataManager.getActualDate());
+        final Calendar myCalendar = Calendar.getInstance();
+
+        final DatePickerDialog.OnDateSetListener date = new DatePickerDialog.OnDateSetListener() {
+
+            @Override
+            public void onDateSet(DatePicker view, int year, int monthOfYear,
+                                  int dayOfMonth) {
+                // TODO Auto-generated method stub
+                myCalendar.set(Calendar.YEAR, year);
+                myCalendar.set(Calendar.MONTH, monthOfYear);
+                myCalendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
+                String myFormat = "dd/MM/yyyy"; //In which you need put here
+                SimpleDateFormat sdf = new SimpleDateFormat(myFormat, Locale.US);
+
+                dateField.setText(sdf.format(myCalendar.getTime()));
+            }
+
+        };
+
+        dateField.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                // TODO Auto-generated method stub
+                new DatePickerDialog(ActivityMenuVehicle.this, date, myCalendar
+                        .get(Calendar.YEAR), myCalendar.get(Calendar.MONTH),
+                        myCalendar.get(Calendar.DAY_OF_MONTH)).show();
+            }
+        });
+
+        dateField.setText(ModelDataManager.getActualDate());
 
         fuelPrice.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
@@ -113,7 +155,7 @@ public class ActivityMenuVehicle extends AppCompatActivity {
                         fuelPrice.getText().toString(),
                         fillUpLiters.getText().toString(),
                         location.getText().toString(),
-                        date.getText().toString(),
+                        dateField.getText().toString(),
                         fuel.getSelectedItem().toString(),
                         selectedVehicle.getLocal_id()+"",
                         kilometers.getText().toString());
@@ -130,16 +172,47 @@ public class ActivityMenuVehicle extends AppCompatActivity {
         dialog.setContentView(R.layout.dialog_add_maintenance);
         dialog.setTitle("Adicionar alerta de manutenção");
 
-        // set the custom dialog components - text, image and button
         final EditText kilometers   = (EditText) dialog.findViewById(R.id.DialogMaintenanceKilometers);
-        final EditText date         = (EditText) dialog.findViewById(R.id.DialogMaintenanceDate);
+        final EditText dateField    = (EditText) dialog.findViewById(R.id.DialogMaintenanceDate);
         final EditText item         = (EditText) dialog.findViewById(R.id.DialogMaintenanceItem);
         Button   confirmButton      = (Button)   dialog.findViewById(R.id.DialogMaintenanceButtonOK);
+
+        final Calendar myCalendar = Calendar.getInstance();
+
+        final DatePickerDialog.OnDateSetListener date = new DatePickerDialog.OnDateSetListener() {
+
+            @Override
+            public void onDateSet(DatePicker view, int year, int monthOfYear,
+                                  int dayOfMonth) {
+                // TODO Auto-generated method stub
+                myCalendar.set(Calendar.YEAR, year);
+                myCalendar.set(Calendar.MONTH, monthOfYear);
+                myCalendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
+                String myFormat = "dd/MM/yyyy";
+                SimpleDateFormat sdf = new SimpleDateFormat(myFormat, Locale.US);
+
+                dateField.setText(sdf.format(myCalendar.getTime()));
+            }
+
+        };
+
+        dateField.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                // TODO Auto-generated method stub
+                new DatePickerDialog(ActivityMenuVehicle.this, date, myCalendar
+                        .get(Calendar.YEAR), myCalendar.get(Calendar.MONTH),
+                        myCalendar.get(Calendar.DAY_OF_MONTH)).show();
+            }
+        });
 
         confirmButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
+                ModelMaintenanceAlert maintenance = new ModelMaintenanceAlert(0,"0",kilometers.getText().toString(),item.getText().toString(),
+                        ModelDataManager.stringToDate(dateField.getText().toString()),Long.toString(selectedVehicle.getLocal_id()),"0");
+                ModelDataManager.getInstance().addOrUpdateMaintenance(selectedVehicle,maintenance);
                 dialog.dismiss();
             }
         });
@@ -153,19 +226,49 @@ public class ActivityMenuVehicle extends AppCompatActivity {
         dialog.setTitle("Adicionar despesa");
 
         final EditText item         = (EditText) dialog.findViewById(R.id.DialogExpenseComponentName);
-        final EditText date         = (EditText) dialog.findViewById(R.id.DialogExpenseDate);
+        final EditText dateField         = (EditText) dialog.findViewById(R.id.DialogExpenseDate);
         final EditText price        = (EditText) dialog.findViewById(R.id.DialogExpensePrice);
         final EditText quantity     = (EditText) dialog.findViewById(R.id.DialogExpenseQuantity);
         Button   confirmButton      = (Button)   dialog.findViewById(R.id.DialogExpenseButtonOK);
 
-        date.setText(ModelDataManager.getActualDate());
+        final Calendar myCalendar = Calendar.getInstance();
+
+        final DatePickerDialog.OnDateSetListener date = new DatePickerDialog.OnDateSetListener() {
+
+            @Override
+            public void onDateSet(DatePicker view, int year, int monthOfYear,
+                                  int dayOfMonth) {
+                // TODO Auto-generated method stub
+                myCalendar.set(Calendar.YEAR, year);
+                myCalendar.set(Calendar.MONTH, monthOfYear);
+                myCalendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
+                String myFormat = "dd/MM/yyyy"; //In which you need put here
+                SimpleDateFormat sdf = new SimpleDateFormat(myFormat, Locale.US);
+
+                dateField.setText(sdf.format(myCalendar.getTime()));
+            }
+
+        };
+
+        dateField.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                // TODO Auto-generated method stub
+                new DatePickerDialog(ActivityMenuVehicle.this, date, myCalendar
+                        .get(Calendar.YEAR), myCalendar.get(Calendar.MONTH),
+                        myCalendar.get(Calendar.DAY_OF_MONTH)).show();
+            }
+        });
+
+        dateField.setText(ModelDataManager.getActualDate());
 
         confirmButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 ModelExpense expense = new ModelExpense(price.getText().toString(),
                         quantity.getText().toString(), item.getText().toString(),
-                        date.getText().toString(), Long.toString(selectedVehicle.getLocal_id()), "0");
+                        dateField.getText().toString(), Long.toString(selectedVehicle.getLocal_id()), "0");
                 ModelDataManager.getInstance().addOrUpdateExpense(selectedVehicle,expense);
                 dialog.dismiss();
             }
@@ -183,7 +286,7 @@ public class ActivityMenuVehicle extends AppCompatActivity {
             startActivity(i);
         }
         else{
-            Toast.makeText(this,"Precisamos de ao menos 2 abastecimentos cadastrados para calcular as médias!", Toast.LENGTH_LONG).show();
+            Toast.makeText(this,"Precisamos de ao menos 2 abastecimentos cadastrados para calcular as médias de consumo.", Toast.LENGTH_LONG).show();
         }
     }
 
@@ -196,7 +299,22 @@ public class ActivityMenuVehicle extends AppCompatActivity {
             startActivity(i);
         }
         else{
-            Toast.makeText(this,"Precisamos de ao menos 1 despesa cadastrada para apresentar o gráfico.", Toast.LENGTH_LONG).show();
+            Toast.makeText(this,"Nenhuma despesa cadastrada.", Toast.LENGTH_LONG).show();
+        }
+    }
+
+    private void showAlertsActions(){
+        ModelDataManager.getInstance().loadFromDB();
+        selectedVehicle = ModelDataManager.getInstance().getVehicles().get((int) getIntent().getExtras().getLong("index"));
+        if(selectedVehicle.getFilteredAlerts().size() > 0){
+            Intent i = new Intent(this, ActivityShowAlerts.class);
+            Bundle b = new Bundle();
+            b.putLong("index", getIntent().getExtras().getLong("index"));
+            i.putExtras(b);
+            startActivity(i);
+        }
+        else{
+            Toast.makeText(this,"Nenhum alerta cadastrado.", Toast.LENGTH_LONG).show();
         }
     }
 
@@ -221,6 +339,7 @@ public class ActivityMenuVehicle extends AppCompatActivity {
         confirmButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                vehicle_name.setText(name.getText().toString());
                 selectedVehicle.setManufacturer(manufacturer.getText().toString());
                 selectedVehicle.setModel(model.getText().toString());
                 selectedVehicle.setName(name.getText().toString());

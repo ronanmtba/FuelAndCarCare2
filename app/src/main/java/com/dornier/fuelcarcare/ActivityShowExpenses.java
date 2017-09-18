@@ -35,6 +35,7 @@ public class ActivityShowExpenses extends AppCompatActivity implements OnChartVa
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_show_expenses);
+        ModelDataManager.getInstance().setActualContext(ActivityShowExpenses.this);
 
         selectedVehicle = ModelDataManager.getInstance().getVehicles().get((int) getIntent().getExtras().getLong("index"));
         selectedVehicle.sortExpenses();
@@ -122,7 +123,7 @@ public class ActivityShowExpenses extends AppCompatActivity implements OnChartVa
 
         ArrayList<ModelExpense> expenses = (ArrayList<ModelExpense>) e.getData();
         for(final ModelExpense expense: expenses){
-            printOnScreen("***",linearLayout);
+            printOnScreen("\n",linearLayout);
             printOnScreen("Nome: " + expense.getComponentName(),linearLayout);
             printOnScreen("Quantidade: " + expense.getQuantity(), linearLayout);
             printOnScreen("Valor final: " + expense.getPrice(),linearLayout);

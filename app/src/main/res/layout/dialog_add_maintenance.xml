@@ -18,9 +18,11 @@
     <EditText
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:clickable="true"
+        android:focusable="false"
         android:id="@+id/DialogMaintenanceDate"
         android:hint="@string/date_check"
-        android:inputType="date"
+        android:inputType="none"
         />
 
     <EditText
