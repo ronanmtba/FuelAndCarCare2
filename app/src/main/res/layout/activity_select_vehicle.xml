@@ -22,13 +22,23 @@
         >
     </ListView>
 
-    <Button
-        android:text="Adicionar novo veiculo"
-        android:background="@drawable/button_layout"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true"
-        android:layout_marginBottom="20dp"
-        android:id="@+id/SelectCarAddNew" />
+        <Button
+            android:text="Novo veiculo"
+            android:background="@drawable/button_layout"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentLeft="true"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/SelectCarAddNew" />
+
+        <Button
+            android:text="Logoff"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentRight="true"
+            android:background="@drawable/button_layout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/SelectCarLogoff" />
+
+
 </RelativeLayout>

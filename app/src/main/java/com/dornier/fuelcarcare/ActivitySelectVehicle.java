@@ -13,11 +13,14 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
+
 import java.util.ArrayList;
 
-public class ActivitySelectVehicle extends AppCompatActivity {
+public class ActivitySelectVehicle extends AppCompatActivity implements ReceiveFromServer {
 
-    Button addCar;
+    Button addCar, logoff;
     ListView listView;
     ArrayAdapter<ModelVehicle> adapter;
 
@@ -28,6 +31,13 @@ public class ActivitySelectVehicle extends AppCompatActivity {
         ModelDataManager.getInstance().setActualContext(ActivitySelectVehicle.this);
         ModelDataManager.getInstance().loadFromDB();
 
+        logoff = (Button) findViewById(R.id.SelectCarLogoff);
+        logoff.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                logoffActions();
+            }
+        });
         addCar = (Button) findViewById(R.id.SelectCarAddNew);
         addCar.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -47,6 +57,8 @@ public class ActivitySelectVehicle extends AppCompatActivity {
                 selectCarActions(i);
             }
         });
+
+        ModelDataManager.getInstance().syncData(this);
 
     }
 
@@ -80,5 +92,23 @@ public class ActivitySelectVehicle extends AppCompatActivity {
         finish();
         startActivity(i);
 
+    }
+    private void logoffActions(){
+        ModelDataManager.getInstance().removeAutoLogin(this);
+        finish();
+    }
+
+    @Override
+    public void onBackPressed(){
+
+        Intent a = new Intent(Intent.ACTION_MAIN);
+        a.addCategory(Intent.CATEGORY_HOME);
+        a.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(a);
+    }
+
+    @Override
+    public void serverCall(String response, String TAG) {
+        ModelDataManager.getInstance().syncFromDB(response);
     }
 }

@@ -7,6 +7,7 @@ import android.content.Context;
 import android.database.Cursor;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by Dornier on 29/05/2017.
@@ -340,6 +341,20 @@ public class ModelDBAdapter {
             }
         }
         return toReturn;
+    }
+
+    public void clearDB(){
+        Cursor c = database.rawQuery("SELECT name FROM sqlite_master WHERE type='table'", null);
+        List<String> tables = new ArrayList<>();
+
+        while (c.moveToNext()) {
+            tables.add(c.getString(0));
+        }
+
+        for (String table : tables) {
+            String dropQuery = "DROP TABLE IF EXISTS " + table;
+            database.execSQL(dropQuery);
+        }
     }
 
 }

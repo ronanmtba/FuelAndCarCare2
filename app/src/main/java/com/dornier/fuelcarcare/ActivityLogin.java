@@ -38,15 +38,20 @@ public class ActivityLogin extends AppCompatActivity implements ReceiveFromServe
                 registerActions();
             }
         });
+
+        if(ModelDataManager.getInstance().verifyAutoLogin(this)){
+            Intent i = new Intent(this, ActivitySelectVehicle.class);
+            startActivity(i);
+        }
     }
 
     private void loginActions(){
-        /*ModelDataManager.getInstance().login(this,
+        ModelDataManager.getInstance().login(this,
                 email.getText().toString(),
                 ModelDataManager.md5(password.getText().toString())
-        );*/
+        );/*
         Intent i = new Intent(this, ActivitySelectVehicle.class);
-        startActivity(i);
+        startActivity(i);*/
 
     }
 
@@ -59,6 +64,7 @@ public class ActivityLogin extends AppCompatActivity implements ReceiveFromServe
     public void serverCall(String response, String TAG) {
         if(TAG.equals("login")){
             if(response.equals("1")){
+                ModelDataManager.getInstance().createAutoLogin(this,email.getText().toString());
                 Intent i = new Intent(this, ActivitySelectVehicle.class);
                 startActivity(i);
             }
@@ -67,4 +73,5 @@ public class ActivityLogin extends AppCompatActivity implements ReceiveFromServe
             }
         }
     }
+
 }
