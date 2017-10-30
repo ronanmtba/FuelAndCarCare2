@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.text.TextUtils;
 import android.util.Log;
+import android.util.LongSparseArray;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.DefaultRetryPolicy;
@@ -170,7 +171,7 @@ public class ModelDataManager {
 
             }
 
-            obj.put("user_email", this.userId);
+            obj.put("user_email", getUserLogged());
             obj.put("vehicles", vehicles);
         }
 
@@ -327,6 +328,9 @@ public class ModelDataManager {
         DateFormat format = new SimpleDateFormat("dd/MM/yyyy", Locale.CANADA);
         if(string.length() > 11)
             format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.CANADA);
+        else if(string.contains("-")){
+            format = new SimpleDateFormat("yyyy-MM-dd", Locale.CANADA);
+        }
         try {
             Date date = format.parse(string);
             return date;
@@ -507,13 +511,135 @@ public class ModelDataManager {
             JSONArray maintenances_to_insert = new JSONArray(fromDB.getString("maintenances_to_insert"));
             JSONArray fill_ups_to_insert = new JSONArray(fromDB.getString("fill_ups_to_insert"));
 
-            for(int i = 0; i < vehicles_to_update.length(); i++){
-                JSONObject vehicleDB = new JSONObject(vehicles_to_update.getString(i));
-                ModelVehicle temp = ModelDBAdapter.getInstance(getActualContext()).getVehicle(vehicleDB.getLong("local_id"));
-                temp.setId(vehicleDB.getString("_id"));
+            updateVehicles(vehicles_to_update);
+            insertVehicles(vehicles_to_insert);
+            removeVehicles(vehicles_to_remove);
+
+            updateExpenses(expenses_to_update);
+            insertExpenses(expenses_to_insert);
+            removeExpenses(expenses_to_remove);
+
+            updateMaintenances(maintenances_to_update);
+            insertMaintenances(maintenances_to_insert);
+            removeMaintenances(maintenances_to_remove);
+
+            updateFillUps(fill_ups_to_update);
+            insertFillUps(fill_ups_to_insert);
+            removeFillUps(fill_ups_to_remove);
+
+        }
+        catch (Exception e){
+            printErrorToConsole(e);
+        }
+    }
+
+    /********************/
+    /* Auxiliar methods */
+    /********************/
+
+    private ModelVehicle findVehicleByLocalId(long local_id){
+        for(ModelVehicle vehicle: vehicles){
+            if(vehicle.getLocal_id() == local_id){
+                return vehicle;
+            }
+        }
+        return null;
+    }
+
+    private ModelExpense findExpenseByLocalId(long local_id){
+        for(ModelVehicle vehicle: vehicles){
+            for(ModelExpense expense: vehicle.getExpenses()){
+                if(expense.getLocal_id() == local_id){
+                    return expense;
+                }
+            }
+        }
+        return null;
+    }
+
+    private ModelMaintenanceAlert findMaintenanceByLocalId(long local_id){
+        for(ModelVehicle vehicle: vehicles){
+            for(ModelMaintenanceAlert maintenance: vehicle.getAllAlerts()){
+                if(maintenance.getLocal_id() == local_id){
+                    return maintenance;
+                }
+            }
+        }
+        return null;
+    }
+
+    private ModelFillUp findFillUpByLocalId(long local_id){
+        for(ModelVehicle vehicle: vehicles){
+            for(ModelFillUp fillUp: vehicle.getAllFillUps()){
+                if(fillUp.getLocal_id() == local_id){
+                    return fillUp;
+                }
+            }
+        }
+        return null;
+    }
+
+    private void removeVehicles(JSONArray vehicles_to_remove){
+        try {
+            for (int i = 0; i < vehicles_to_remove.length(); i++) {
+                JSONObject vehicleDB = new JSONObject(vehicles_to_remove.getString(i));
+                ModelVehicle temp = findVehicleByLocalId(vehicleDB.getLong("local_id"));
+                temp.setStatus("-1");
                 getInstance().addOrUpdateVehicle(temp);
             }
+        }
+        catch (Exception e){
+            printErrorToConsole(e);
+        }
+    }
 
+    private void removeExpenses(JSONArray expenses_to_remove){
+        try{
+            for(int i = 0; i < expenses_to_remove.length(); i++){
+                JSONObject expenseDB = new JSONObject(expenses_to_remove.getString(i));
+                ModelExpense expense = findExpenseByLocalId(expenseDB.getLong("local_id"));
+                ModelVehicle vehicle = findVehicleByLocalId(Long.parseLong(expense.getCar_id()));
+                expense.setStatus("-1");
+                getInstance().addOrUpdateExpense(vehicle,expense);
+            }
+        }
+        catch (Exception e){
+            printErrorToConsole(e);
+        }
+    }
+
+    private void removeMaintenances(JSONArray maintenances_to_remove){
+        try{
+            for(int i = 0; i < maintenances_to_remove.length(); i++){
+                JSONObject maintenanceDB = new JSONObject(maintenances_to_remove.getString(i));
+                ModelMaintenanceAlert alert = findMaintenanceByLocalId(maintenanceDB.getLong("local_id"));
+                ModelVehicle vehicle = findVehicleByLocalId(Long.parseLong(alert.getCar_id()));
+                alert.setStatus("-1");
+                getInstance().addOrUpdateMaintenance(vehicle, alert);
+            }
+        }
+        catch (Exception e){
+            printErrorToConsole(e);
+        }
+    }
+
+    private void removeFillUps(JSONArray fill_ups_to_remove){
+        try{
+            for(int i = 0; i < fill_ups_to_remove.length(); i++){
+                JSONObject fillUpDB = new JSONObject(fill_ups_to_remove.getString(i));
+                ModelFillUp fillUp = findFillUpByLocalId(fillUpDB.getLong("local_id"));
+                ModelVehicle vehicle = findVehicleByLocalId(Long.parseLong(fillUp.getCar_id()));
+                fillUp.setStatus("-1");
+                getInstance().addOrUpdateFillUp(vehicle, fillUp);
+            }
+        }
+        catch (Exception e){
+            printErrorToConsole(e);
+        }
+    }
+
+    private void insertVehicles(JSONArray vehicles_to_insert){
+        try{
             for(int i = 0; i < vehicles_to_insert.length(); i++){
                 JSONObject vehicleDB = new JSONObject(vehicles_to_insert.getString(i));
                 ModelVehicle temp = new ModelVehicle(0,
@@ -530,4 +656,133 @@ public class ModelDataManager {
             printErrorToConsole(e);
         }
     }
+
+    private void insertExpenses(JSONArray expenses_to_insert){
+        try{
+            for(int i = 0; i < expenses_to_insert.length(); i++){
+                JSONObject expenseDB = new JSONObject(expenses_to_insert.getString(i));
+                ModelExpense temp = new ModelExpense(0,
+                        expenseDB.getString("_id"),
+                        expenseDB.getString("price"),
+                        expenseDB.getString("quantity"),
+                        expenseDB.getString("component_name"),
+                        expenseDB.getString("date"),
+                        expenseDB.getString("car_id"),
+                        expenseDB.getString("status"));
+                ModelVehicle vehicle = findVehicleByLocalId(Long.parseLong(temp.getCar_id()));
+                addOrUpdateExpense(vehicle,temp);
+            }
+        }
+        catch (Exception e){
+            printErrorToConsole(e);
+        }
+    }
+
+    private void insertMaintenances(JSONArray maintenances_to_insert){
+        try{
+            for(int i = 0; i < maintenances_to_insert.length(); i++){
+                JSONObject maintenanceDB = new JSONObject(maintenances_to_insert.getString(i));
+                ModelMaintenanceAlert temp = new ModelMaintenanceAlert(0,
+                        maintenanceDB.getString("_id"),
+                        maintenanceDB.getString("kilometers"),
+                        maintenanceDB.getString("item"),
+                        maintenanceDB.getString("date"),
+                        maintenanceDB.getString("car_id"),
+                        maintenanceDB.getString("status"));
+                ModelVehicle vehicle = findVehicleByLocalId(Long.parseLong(temp.getCar_id()));
+                addOrUpdateMaintenance(vehicle,temp);
+            }
+        }
+        catch (Exception e){
+            printErrorToConsole(e);
+        }
+    }
+
+    private void insertFillUps(JSONArray fill_ups_to_insert){
+        try{
+            for(int i = 0; i < fill_ups_to_insert.length(); i++){
+                JSONObject fillUpsDB = new JSONObject(fill_ups_to_insert.getString(i));
+                ModelFillUp temp = new ModelFillUp(0,
+                        fillUpsDB.getString("_id"),
+                        fillUpsDB.getString("final_price"),
+                        fillUpsDB.getString("fuel_price"),
+                        fillUpsDB.getString("fuel_amount"),
+                        fillUpsDB.getString("location"),
+                        fillUpsDB.getString("date"),
+                        fillUpsDB.getString("fuel"),
+                        fillUpsDB.getString("car_id"),
+                        fillUpsDB.getString("status"),
+                        fillUpsDB.getString("kilometers"));
+                ModelVehicle vehicle = findVehicleByLocalId(Long.parseLong(temp.getCar_id()));
+                addOrUpdateFillUp(vehicle,temp);
+            }
+        }
+        catch (Exception e){
+            printErrorToConsole(e);
+        }
+    }
+
+    private void updateVehicles(JSONArray vehicles_to_update){
+        for(int i = 0; i < vehicles_to_update.length(); i++){
+            try {
+                JSONObject vehicleDB = new JSONObject(vehicles_to_update.getString(i));
+                ModelVehicle temp = findVehicleByLocalId(vehicleDB.getLong("local_id"));
+                temp.setStatus("1");
+                temp.setId(vehicleDB.getString("_id"));
+                getInstance().addOrUpdateVehicle(temp);
+            }
+            catch (Exception e){
+                printErrorToConsole(e);
+            }
+        }
+    }
+
+    private void updateExpenses(JSONArray expenses_to_update){
+        try{
+            for(int i = 0; i < expenses_to_update.length(); i++){
+                JSONObject expenseDB = new JSONObject(expenses_to_update.getString(i));
+                ModelExpense expense = findExpenseByLocalId(expenseDB.getLong("local_id"));
+                ModelVehicle vehicle = findVehicleByLocalId(Long.parseLong(expense.getCar_id()));
+                expense.setStatus("1");
+                expense.setId(expenseDB.getString("_id"));
+                getInstance().addOrUpdateExpense(vehicle,expense);
+            }
+        }
+        catch (Exception e){
+            printErrorToConsole(e);
+        }
+    }
+
+    private void updateMaintenances(JSONArray maintenances_to_update){
+        try{
+            for(int i = 0; i < maintenances_to_update.length(); i++){
+                JSONObject maintenanceDB = new JSONObject(maintenances_to_update.getString(i));
+                ModelMaintenanceAlert temp = findMaintenanceByLocalId(maintenanceDB.getLong("local_id"));
+                ModelVehicle vehicle = findVehicleByLocalId(Long.parseLong(temp.getCar_id()));
+                temp.setStatus("1");
+                temp.setId(maintenanceDB.getString("_id"));
+                getInstance().addOrUpdateMaintenance(vehicle,temp);
+            }
+        }
+        catch (Exception e){
+            printErrorToConsole(e);
+        }
+    }
+
+    private void updateFillUps(JSONArray fill_ups_to_update){
+        try{
+            for(int i = 0; i < fill_ups_to_update.length(); i++){
+                JSONObject fillUpDB = new JSONObject(fill_ups_to_update.getString(i));
+                ModelFillUp temp = findFillUpByLocalId(fillUpDB.getLong("local_id"));
+                ModelVehicle vehicle = findVehicleByLocalId(Long.parseLong(temp.getCar_id()));
+                temp.setStatus("1");
+                temp.setId(fillUpDB.getString("_id"));
+                getInstance().addOrUpdateFillUp(vehicle,temp);
+            }
+        }
+        catch (Exception e){
+            printErrorToConsole(e);
+        }
+    }
+
 }
