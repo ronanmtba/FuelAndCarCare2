@@ -32,15 +32,18 @@ public class ModelAlarmReceiver extends BroadcastReceiver{
 
         for(ModelVehicle vehicle:ModelDataManager.getInstance().getVehicles()){
             for(ModelMaintenanceAlert alert:vehicle.getAllAlerts()){
-                if ((fmt.format(now).equals(fmt.format(alert.getMaintenance_date()))) && (!alert.getStatus().equals("-1"))){
-                    alert.setStatus("-1");
+                if ((fmt.format(now).equals(fmt.format(alert.getMaintenance_date()))) && !(alert.getStatus() == -1)){
+                    alert.setStatus(-1);
                     ModelDataManager.getInstance().addOrUpdateMaintenance(vehicle,alert);
 
-                    Notification noti = new Notification.Builder(context)
-                            .setContentTitle(msg)
-                            .setContentText(detail)
-                            .setSmallIcon(R.drawable.icon_nobg)
-                            .build();
+                    Notification noti = null;
+                    if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.JELLY_BEAN) {
+                        noti = new Notification.Builder(context)
+                                .setContentTitle(msg)
+                                .setContentText(detail)
+                                .setSmallIcon(R.drawable.icon_nobg)
+                                .build();
+                    }
                     NotificationManager notificationManager = (NotificationManager) context.getSystemService(NOTIFICATION_SERVICE);
                     noti.flags |= Notification.FLAG_AUTO_CANCEL;
 

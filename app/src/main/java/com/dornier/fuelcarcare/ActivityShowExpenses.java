@@ -80,7 +80,7 @@ public class ActivityShowExpenses extends AppCompatActivity implements OnChartVa
             JSONObject item = new JSONObject();
 
             for(int i = 0; i < expenses.size(); i++){
-                if(Integer.parseInt(expenses.get(i).getStatus()) >= 0) {
+                if((expenses.get(i).getStatus()) >= 0) {
                     if(item.length() == 0){
                         item.put("value", expenses.get(i).getPrice());
                         item.put("date", expenses.get(i).getDate());
@@ -169,7 +169,7 @@ public class ActivityShowExpenses extends AppCompatActivity implements OnChartVa
 
 
     public void onConfirmDelete(ModelExpense expense){
-        expense.setStatus("-1");
+        expense.setStatus(-1);
         ModelDataManager.getInstance().addOrUpdateExpense(selectedVehicle,expense);
         finish();
     }

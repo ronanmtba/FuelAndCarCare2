@@ -74,7 +74,7 @@ public class ActivityShowAlerts extends AppCompatActivity {
 
     public void onConfirmDelete(int i){
         ModelMaintenanceAlert alert = selectedVehicle.getFilteredAlerts().get(i);
-        alert.setStatus("-1");
+        alert.setStatus(-1);
         ModelDataManager.getInstance().addOrUpdateMaintenance(selectedVehicle,alert);
         finish();
     }

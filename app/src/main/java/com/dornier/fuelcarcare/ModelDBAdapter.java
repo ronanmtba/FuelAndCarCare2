@@ -106,7 +106,8 @@ public class ModelDBAdapter {
     }
 
     private ModelExpense cursorToExpense(Cursor cursor) {
-        ModelExpense expense = new ModelExpense(cursor.getLong(cursor.getColumnIndex(ModelDBManager.expenses_local_id)),
+        ModelExpense expense =
+                new ModelExpense(cursor.getLong(cursor.getColumnIndex(ModelDBManager.expenses_local_id)),
                 cursor.getString(cursor.getColumnIndex(ModelDBManager.expenses_id)),
                 cursor.getString(cursor.getColumnIndex(ModelDBManager.expenses_price)),
                 cursor.getString(cursor.getColumnIndex(ModelDBManager.expenses_quantity)),

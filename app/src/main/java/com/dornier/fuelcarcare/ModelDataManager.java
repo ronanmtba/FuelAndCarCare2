@@ -107,15 +107,15 @@ public class ModelDataManager {
         JSONObject obj = new JSONObject();
         JSONArray vehicles = new JSONArray();
         try {
-            ArrayList<ModelVehicle> vehicles1 = ModelDBAdapter.getInstance(getActualContext()).getAllVehicles();
-            for (ModelVehicle vehicle : vehicles1) {
+
+            for (ModelVehicle vehicle : this.vehicles) {
                 JSONObject jsonVehicle = new JSONObject();
                 JSONArray jsonExpenses = new JSONArray();
                 JSONArray jsonMaintenances = new JSONArray();
                 JSONArray jsonFillUps = new JSONArray();
                 jsonVehicle.put("_id", vehicle.getId());
                 jsonVehicle.put("status", vehicle.getStatus());
-                if(vehicle.getStatus().equals("0")){
+                if(vehicle.getStatus() == 0){
                     jsonVehicle.put("local_id", vehicle.getLocal_id());
                     jsonVehicle.put("model", vehicle.getModel());
                     jsonVehicle.put("manufacturer", vehicle.getManufacturer());
@@ -127,7 +127,7 @@ public class ModelDataManager {
                     JSONObject jsonExpense = new JSONObject();
                     jsonExpense.put("_id", expense.getId());
                     jsonExpense.put("status", expense.getStatus());
-                    if(expense.getStatus().equals("0")){
+                    if(expense.getStatus() == 0){
                         jsonExpense.put("local_id", expense.getLocal_id());
                         jsonExpense.put("date", ModelDataManager.dateToMySQL(expense.getDate()));
                         jsonExpense.put("price", expense.getPrice());
@@ -141,7 +141,7 @@ public class ModelDataManager {
                     JSONObject jsonFillUp = new JSONObject();
                     jsonFillUp.put("_id", fillUp.getId());
                     jsonFillUp.put("status", fillUp.getStatus());
-                    if(fillUp.getStatus().equals("0")){
+                    if(fillUp.getStatus() == 0){
                         jsonFillUp.put("date", ModelDataManager.dateToMySQL(fillUp.getDate()));
                         jsonFillUp.put("local_id", fillUp.getLocal_id());
                         jsonFillUp.put("final_price", fillUp.getFinalPrice());
@@ -158,7 +158,7 @@ public class ModelDataManager {
                     JSONObject jsonAlert = new JSONObject();
                     jsonAlert.put("_id", alert.getId());
                     jsonAlert.put("status", alert.getStatus());
-                    if(alert.getStatus().equals("0")){
+                    if(alert.getStatus() == 0){
                         jsonAlert.put("local_id",alert.getLocal_id());
                         jsonAlert.put("item",alert.getItem());
                         jsonAlert.put("kilometers",alert.getKilometers());
@@ -349,7 +349,7 @@ public class ModelDataManager {
     public ArrayList<ModelVehicle> getVehicles() {
         final ArrayList<ModelVehicle> toReturn = new ArrayList<ModelVehicle>();
         for(ModelVehicle vehicle: vehicles){
-            if(Integer.parseInt(vehicle.getStatus()) >= 0)
+            if((vehicle.getStatus()) >= 0)
                 toReturn.add(vehicle);
         }
         return toReturn;
@@ -372,21 +372,21 @@ public class ModelDataManager {
         for(ModelVehicle vehicle: vehicles){
 
             for(ModelFillUp fill: fill_ups){
-                long car_id = Long.parseLong(fill.getCar_id());
+                long car_id = (fill.getCar_id());
                 if(car_id == vehicle.getLocal_id()){
                     vehicle.getAllFillUps().add(fill);
                     //fill_ups.remove(fill);
                 }
             }
             for(ModelMaintenanceAlert alert: alerts){
-                long car_id = Long.parseLong(alert.getCar_id());
+                long car_id = (alert.getCar_id());
                 if(car_id == vehicle.getLocal_id()){
                     vehicle.getAllAlerts().add(alert);
                     //alerts.remove(alert);
                 }
             }
             for(ModelExpense expense: expenses){
-                long car_id = Long.parseLong(expense.getCar_id());
+                long car_id = (expense.getCar_id());
                 if(car_id == vehicle.getLocal_id()){
                     vehicle.getExpenses().add(expense);
                     //expenses.remove(expense);
@@ -397,12 +397,13 @@ public class ModelDataManager {
 
     public void addOrUpdateVehicle(ModelVehicle vehicle){
         ModelDataManager.getInstance().getVehicles().remove(vehicle);
+        vehicles.remove(vehicle);
         vehicles.add(ModelDBAdapter.getInstance(actualContext).insertVehicle(vehicle));
     }
 
     public void addOrUpdateFillUp(ModelVehicle vehicle, ModelFillUp fill_up){
         vehicle.getAllFillUps().remove(fill_up);
-        fill_up.setCar_id(""+vehicle.getLocal_id());
+        fill_up.setCar_id(vehicle.getLocal_id());
         vehicle.getAllFillUps().add(ModelDBAdapter.getInstance(actualContext).insertFillUp(fill_up));
         //Verifies if there is any alert to show
         ArrayList<ModelMaintenanceAlert> alerts = vehicle.getFilteredAlerts();
@@ -416,13 +417,13 @@ public class ModelDataManager {
 
     public void addOrUpdateExpense(ModelVehicle vehicle, ModelExpense expense){
         vehicle.getExpenses().remove(expense);
-        expense.setCar_id(""+vehicle.getLocal_id());
+        expense.setCar_id(vehicle.getLocal_id());
         vehicle.getExpenses().add(ModelDBAdapter.getInstance(actualContext).insertExpense(expense));
     }
 
     public void addOrUpdateMaintenance(ModelVehicle vehicle, ModelMaintenanceAlert alert){
         vehicle.getAllAlerts().remove(alert);
-        alert.setCar_id(""+vehicle.getLocal_id());
+        alert.setCar_id(vehicle.getLocal_id());
         vehicle.getAllAlerts().add(ModelDBAdapter.getInstance(actualContext).insertMaintenance(alert));
         scheduleAlert(vehicle, alert);
     }
@@ -551,9 +552,9 @@ public class ModelDataManager {
         return null;
     }
 
-    private ModelVehicle findVehicleById(String id){
+    private ModelVehicle findVehicleById(long id){
         for(ModelVehicle vehicle: vehicles){
-            if(vehicle.getId().equals(id)){
+            if(vehicle.getId() == (id)){
                 return vehicle;
             }
         }
@@ -598,7 +599,7 @@ public class ModelDataManager {
             for (int i = 0; i < vehicles_to_remove.length(); i++) {
                 JSONObject vehicleDB = new JSONObject(vehicles_to_remove.getString(i));
                 ModelVehicle temp = findVehicleByLocalId(vehicleDB.getLong("local_id"));
-                temp.setStatus("-1");
+                temp.setStatus(-1);
                 getInstance().addOrUpdateVehicle(temp);
             }
         }
@@ -612,8 +613,8 @@ public class ModelDataManager {
             for(int i = 0; i < expenses_to_remove.length(); i++){
                 JSONObject expenseDB = new JSONObject(expenses_to_remove.getString(i));
                 ModelExpense expense = findExpenseByLocalId(expenseDB.getLong("local_id"));
-                ModelVehicle vehicle = findVehicleByLocalId(Long.parseLong(expense.getCar_id()));
-                expense.setStatus("-1");
+                ModelVehicle vehicle = findVehicleByLocalId((expense.getCar_id()));
+                expense.setStatus(-1);
                 getInstance().addOrUpdateExpense(vehicle,expense);
             }
         }
@@ -627,8 +628,8 @@ public class ModelDataManager {
             for(int i = 0; i < maintenances_to_remove.length(); i++){
                 JSONObject maintenanceDB = new JSONObject(maintenances_to_remove.getString(i));
                 ModelMaintenanceAlert alert = findMaintenanceByLocalId(maintenanceDB.getLong("local_id"));
-                ModelVehicle vehicle = findVehicleByLocalId(Long.parseLong(alert.getCar_id()));
-                alert.setStatus("-1");
+                ModelVehicle vehicle = findVehicleByLocalId((alert.getCar_id()));
+                alert.setStatus(-1);
                 getInstance().addOrUpdateMaintenance(vehicle, alert);
             }
         }
@@ -642,8 +643,8 @@ public class ModelDataManager {
             for(int i = 0; i < fill_ups_to_remove.length(); i++){
                 JSONObject fillUpDB = new JSONObject(fill_ups_to_remove.getString(i));
                 ModelFillUp fillUp = findFillUpByLocalId(fillUpDB.getLong("local_id"));
-                ModelVehicle vehicle = findVehicleByLocalId(Long.parseLong(fillUp.getCar_id()));
-                fillUp.setStatus("-1");
+                ModelVehicle vehicle = findVehicleByLocalId((fillUp.getCar_id()));
+                fillUp.setStatus(-1);
                 getInstance().addOrUpdateFillUp(vehicle, fillUp);
             }
         }
@@ -741,8 +742,8 @@ public class ModelDataManager {
             try {
                 JSONObject vehicleDB = new JSONObject(vehicles_to_update.getString(i));
                 ModelVehicle temp = findVehicleByLocalId(vehicleDB.getLong("local_id"));
-                temp.setStatus("1");
-                temp.setId(vehicleDB.getString("_id"));
+                temp.setStatus(1);
+                temp.setId(vehicleDB.getLong("_id"));
                 getInstance().addOrUpdateVehicle(temp);
             }
             catch (Exception e){
@@ -756,9 +757,9 @@ public class ModelDataManager {
             for(int i = 0; i < expenses_to_update.length(); i++){
                 JSONObject expenseDB = new JSONObject(expenses_to_update.getString(i));
                 ModelExpense expense = findExpenseByLocalId(expenseDB.getLong("local_id"));
-                ModelVehicle vehicle = findVehicleByLocalId(Long.parseLong(expense.getCar_id()));
-                expense.setStatus("1");
-                expense.setId(expenseDB.getString("_id"));
+                ModelVehicle vehicle = findVehicleByLocalId((expense.getCar_id()));
+                expense.setStatus(1);
+                expense.setId(expenseDB.getLong("_id"));
                 getInstance().addOrUpdateExpense(vehicle,expense);
             }
         }
@@ -772,9 +773,9 @@ public class ModelDataManager {
             for(int i = 0; i < maintenances_to_update.length(); i++){
                 JSONObject maintenanceDB = new JSONObject(maintenances_to_update.getString(i));
                 ModelMaintenanceAlert temp = findMaintenanceByLocalId(maintenanceDB.getLong("local_id"));
-                ModelVehicle vehicle = findVehicleByLocalId(Long.parseLong(temp.getCar_id()));
-                temp.setStatus("1");
-                temp.setId(maintenanceDB.getString("_id"));
+                ModelVehicle vehicle = findVehicleByLocalId((temp.getCar_id()));
+                temp.setStatus(1);
+                temp.setId(maintenanceDB.getLong("_id"));
                 getInstance().addOrUpdateMaintenance(vehicle,temp);
             }
         }
@@ -788,8 +789,8 @@ public class ModelDataManager {
             for(int i = 0; i < fill_ups_to_update.length(); i++){
                 JSONObject fillUpDB = new JSONObject(fill_ups_to_update.getString(i));
                 ModelFillUp temp = findFillUpByLocalId(fillUpDB.getLong("local_id"));
-                ModelVehicle vehicle = findVehicleByLocalId(Long.parseLong(temp.getCar_id()));
-                temp.setStatus("1");
+                ModelVehicle vehicle = findVehicleByLocalId((temp.getCar_id()));
+                temp.setStatus(1);
                 temp.setId(fillUpDB.getString("_id"));
                 getInstance().addOrUpdateFillUp(vehicle,temp);
             }

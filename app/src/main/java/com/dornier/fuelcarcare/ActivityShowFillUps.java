@@ -130,7 +130,7 @@ public class ActivityShowFillUps extends AppCompatActivity implements OnChartVal
     }
 
     public void onConfirmDelete(){
-        selectedFillUp.setStatus("-1");
+        selectedFillUp.setStatus(-1);
         ModelDataManager.getInstance().addOrUpdateFillUp(selectedVehicle, selectedFillUp);
         finish();
         //startActivity(new Intent(ActivityShowFillUps.this, ActivityMenuVehicle.class));

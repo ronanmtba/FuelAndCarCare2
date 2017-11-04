@@ -48,17 +48,17 @@ public class ModelDBManager extends SQLiteOpenHelper {
 
     private static final String database_create_fill_ups =  "create table "
             + table_name_fill_ups + "( " +
-            fill_ups_local_id       + " integer primary key autoincrement, " +
-            fill_ups_id             +" text not null, " +
-            fill_ups_final_price    +" text not null, " +
-            fill_ups_fuel_price     +" text not null, " +
-            fill_ups_fuel_amount    +" text not null, " +
-            fill_ups_kilometers     +" text not null, " +
+            fill_ups_local_id       +" integer primary key autoincrement, " +
+            fill_ups_id             +" integer not null, " +
+            fill_ups_final_price    +" real not null, " +
+            fill_ups_fuel_price     +" real not null, " +
+            fill_ups_fuel_amount    +" real not null, " +
+            fill_ups_kilometers     +" integer not null, " +
             fill_ups_location       +" text not null, " +
             fill_ups_fill_date      +" text not null, " +
             fill_ups_fuel           +" text not null, " +
-            fill_ups_car_id         +" text not null, " +
-            fill_ups_status         +" text not null );";
+            fill_ups_car_id         +" integer not null, " +
+            fill_ups_status         +" integer not null );";
 
     /**Tabela expenses**/
 
@@ -75,13 +75,13 @@ public class ModelDBManager extends SQLiteOpenHelper {
     private static final String database_create_expenses =  "create table "
             + table_name_expenses + "( " +
             expenses_local_id       +" integer primary key autoincrement, " +
-            expenses_id             +" text not null, " +
-            expenses_price          +" text not null, " +
-            expenses_quantity       +" text not null, " +
+            expenses_id             +" integer not null, " +
+            expenses_price          +" real not null, " +
+            expenses_quantity       +" real not null, " +
             expenses_component_name +" text not null, " +
             expenses_expense_date   +" text not null, " +
-            expenses_car_id         +" text not null, " +
-            expenses_status         +" text not null );";
+            expenses_car_id         +" integer not null, " +
+            expenses_status         +" integer not null );";
 
     /**tabela maintenances**/
 
@@ -97,12 +97,12 @@ public class ModelDBManager extends SQLiteOpenHelper {
     private static final String database_create_maintenances =  "create table "
             + table_name_maintenances + "( " +
             maintenances_local_id           +" integer primary key autoincrement, " +
-            maintenances_id                 +" text not null, " +
-            maintenances_kilometers         +" text not null, " +
+            maintenances_id                 +" integer not null, " +
+            maintenances_kilometers         +" integer not null, " +
             maintenances_item               +" text not null, " +
             maintenances_maintenance_date   +" text not null, " +
-            maintenances_car_id             +" text not null, " +
-            maintenances_status             +" text not null );";
+            maintenances_car_id             +" integer not null, " +
+            maintenances_status             +" integer not null );";
 
     /**tabela vehicles**/
 
@@ -118,10 +118,10 @@ public class ModelDBManager extends SQLiteOpenHelper {
     private static final String database_create_vehicles =  "create table "
             + table_name_vehicles + "( " +
             vehicles_local_id       +" integer primary key autoincrement, " +
-            vehicles_id             +" text not null, " +
+            vehicles_id             +" integer not null, " +
             vehicles_name           +" text not null, " +
             vehicles_manufacturer   +" text not null, " +
             vehicles_model          +" text not null, " +
-            vehicles_year           +" text not null, " +
-            vehicles_status         +" text not null );";
+            vehicles_year           +" integer not null, " +
+            vehicles_status         +" integer not null );";
 }

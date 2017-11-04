@@ -17,10 +17,11 @@ public class ModelFillUp {
     private String location;
     private Date date;
     private String fuel;
-    private String car_id;
-    private String status;
+    private long car_id;
+    private int status;
 
-    public ModelFillUp(long local_id, String id, double finalPrice, double fuelPrice, double fuelAmount, String location, Date date, String fuel, String car_id, String status, int kilometers) {
+    public ModelFillUp(long local_id, String id, double finalPrice, double fuelPrice, double fuelAmount, String location,
+                       Date date, String fuel, long car_id, int status, int kilometers) {
         this.local_id   = local_id;
         this.finalPrice = finalPrice;
         this.fuelPrice  = fuelPrice;
@@ -43,8 +44,8 @@ public class ModelFillUp {
         this.date       = ModelDataManager.stringToDate(date);
         this.fuel       = fuel;
         this.id         = id;
-        this.car_id     = car_id;
-        this.status     = status;
+        this.car_id     = Long.parseLong(car_id);
+        this.status     = Integer.parseInt(status);
         this.kilometers = Integer.parseInt(kilometers);
     }
 
@@ -57,8 +58,8 @@ public class ModelFillUp {
         this.date       = ModelDataManager.stringToDate(date);
         this.fuel       = fuel;
         this.id         = "0";
-        this.car_id     = car_id;
-        this.status     = "0";
+        this.car_id     = Long.parseLong(car_id);
+        this.status     = 0;
         this.kilometers = Integer.parseInt(kilometers);
     }
 
@@ -126,19 +127,19 @@ public class ModelFillUp {
         this.fuel = fuel;
     }
 
-    public String getCar_id() {
+    public long getCar_id() {
         return car_id;
     }
 
-    public void setCar_id(String car_id) {
+    public void setCar_id(long car_id) {
         this.car_id = car_id;
     }
 
-    public String getStatus() {
+    public int getStatus() {
         return status;
     }
 
-    public void setStatus(String status) {
+    public void setStatus(int status) {
         this.status = status;
     }
 

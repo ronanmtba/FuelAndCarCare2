@@ -210,8 +210,8 @@ public class ActivityMenuVehicle extends AppCompatActivity {
         confirmButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                ModelMaintenanceAlert maintenance = new ModelMaintenanceAlert(0,"0",kilometers.getText().toString(),item.getText().toString(),
-                        ModelDataManager.stringToDate(dateField.getText().toString()),Long.toString(selectedVehicle.getLocal_id()),"0");
+                ModelMaintenanceAlert maintenance = new ModelMaintenanceAlert(0,0,kilometers.getText().toString(),item.getText().toString(),
+                        ModelDataManager.stringToDate(dateField.getText().toString()),(selectedVehicle.getLocal_id()),0);
                 ModelDataManager.getInstance().addOrUpdateMaintenance(selectedVehicle,maintenance);
                 dialog.dismiss();
             }
@@ -334,7 +334,7 @@ public class ActivityMenuVehicle extends AppCompatActivity {
         manufacturer.setText(selectedVehicle.getManufacturer());
         model.setText(selectedVehicle.getModel());
         name.setText(selectedVehicle.getName());
-        year.setText(selectedVehicle.getYear());
+        year.setText(Integer.toString(selectedVehicle.getYear()));
 
         confirmButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -343,12 +343,12 @@ public class ActivityMenuVehicle extends AppCompatActivity {
                 selectedVehicle.setManufacturer(manufacturer.getText().toString());
                 selectedVehicle.setModel(model.getText().toString());
                 selectedVehicle.setName(name.getText().toString());
-                selectedVehicle.setYear(year.getText().toString());
+                selectedVehicle.setYear(Integer.parseInt(year.getText().toString()));
                 if(check.isChecked())
-                    selectedVehicle.setStatus("-1");
+                    selectedVehicle.setStatus(-1);
                 ModelDataManager.getInstance().addOrUpdateVehicle(selectedVehicle);
                 dialog.dismiss();
-                if(selectedVehicle.getStatus().equals("-1")){
+                if(selectedVehicle.getStatus() == -1){
                     startActivity(new Intent(ActivityMenuVehicle.this, ActivitySelectVehicle.class));
                     ActivityMenuVehicle.this.finish();
                 }

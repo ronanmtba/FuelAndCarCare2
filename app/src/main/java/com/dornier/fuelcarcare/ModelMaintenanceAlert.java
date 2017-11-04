@@ -8,15 +8,15 @@ import java.util.Date;
 
 public class ModelMaintenanceAlert {
     private long local_id;
-    private String id;
+    private long id;
     private String kilometers;
     private String item;
     private Date maintenance_date;
-    private String car_id;
-    private String status;
+    private long car_id;
+    private int status;
 
 
-    public ModelMaintenanceAlert(long local_id, String id, String kilometers, String item, Date date, String car_id, String status) {
+    public ModelMaintenanceAlert(long local_id, long id, String kilometers, String item, Date date, long car_id, int status) {
         this.local_id         = local_id;
         this.id               = id;
         this.kilometers       = kilometers;
@@ -28,12 +28,12 @@ public class ModelMaintenanceAlert {
 
     public ModelMaintenanceAlert(long local_id, String id, String kilometers, String item, String date, String car_id, String status) {
         this.local_id         = local_id;
-        this.id               = id;
+        this.id               = Long.parseLong(id);
         this.kilometers       = kilometers;
         this.item             = item;
         this.maintenance_date = ModelDataManager.stringToDate(date);
-        this.car_id           = car_id;
-        this.status           = status;
+        this.car_id           = Long.parseLong(car_id);
+        this.status           = Integer.parseInt(status);
     }
 
     public long getLocal_id() {
@@ -44,11 +44,11 @@ public class ModelMaintenanceAlert {
         this.local_id = local_id;
     }
 
-    public String getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
@@ -76,19 +76,19 @@ public class ModelMaintenanceAlert {
         this.maintenance_date = maintenance_date;
     }
 
-    public String getCar_id() {
+    public Long getCar_id() {
         return car_id;
     }
 
-    public void setCar_id(String car_id) {
+    public void setCar_id(long car_id) {
         this.car_id = car_id;
     }
 
-    public String getStatus() {
+    public int getStatus() {
         return status;
     }
 
-    public void setStatus(String status) {
+    public void setStatus(int status) {
         this.status = status;
     }
 }

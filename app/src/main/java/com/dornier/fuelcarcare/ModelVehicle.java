@@ -11,24 +11,24 @@ import java.util.Date;
 
 public class ModelVehicle {
     private long local_id;
-    private String id;
+    private long id;
     private String name;
     private String manufacturer;
     private String model;
-    private String year;
-    private String status;
+    private int year;
+    private int status;
     private ArrayList<ModelMaintenanceAlert> alerts;
     private ArrayList<ModelFillUp> fillUps;
     private ArrayList<ModelExpense> expenses;
 
     public ModelVehicle(String name) {
         this.local_id   = 0;
-        this.id         = "";
+        this.id         = 0;
         this.name       = name;
-        this.manufacturer= "";
-        this.model      = "";
-        this.year       = "";
-        this.status     = "0";
+        this.manufacturer= " ";
+        this.model      = " ";
+        this.year       = 1990;
+        this.status     = 0;
         this.alerts     = new ArrayList<ModelMaintenanceAlert>();
         this.fillUps    = new ArrayList<ModelFillUp>();
         this.expenses   = new ArrayList<ModelExpense>();
@@ -36,12 +36,12 @@ public class ModelVehicle {
 
     public ModelVehicle(long local_id, String id, String name, String manufacturer, String model, String year, String status) {
         this.local_id       = local_id;
-        this.id             = id;
+        this.id             = Long.parseLong(id);
         this.name           = name;
         this.manufacturer   = manufacturer;
         this.model          = model;
-        this.year           = year;
-        this.status         = status;
+        this.year           = Integer.parseInt(year);
+        this.status         = Integer.parseInt(status);
         this.alerts         = new ArrayList<ModelMaintenanceAlert>();
         this.fillUps        = new ArrayList<ModelFillUp>();
         this.expenses       = new ArrayList<ModelExpense>();
@@ -106,19 +106,19 @@ public class ModelVehicle {
         this.local_id = local_id;
     }
 
-    public String getId() {
+    public long getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(long id) {
         this.id = id;
     }
 
-    public String getStatus() {
+    public int getStatus() {
         return status;
     }
 
-    public void setStatus(String status) {
+    public void setStatus(int status) {
         this.status = status;
     }
 
@@ -150,11 +150,11 @@ public class ModelVehicle {
         this.model = model;
     }
 
-    public String getYear() {
+    public int getYear() {
         return year;
     }
 
-    public void setYear(String year) {
+    public void setYear(int year) {
         this.year = year;
     }
 
@@ -165,7 +165,7 @@ public class ModelVehicle {
     public ArrayList<ModelMaintenanceAlert> getFilteredAlerts() {
         final ArrayList<ModelMaintenanceAlert> toReturn = new ArrayList<ModelMaintenanceAlert>();
         for(ModelMaintenanceAlert alert: alerts){
-            if(Integer.parseInt(alert.getStatus()) >= 0)
+            if((alert.getStatus()) >= 0)
                 toReturn.add(alert);
         }
         return toReturn;
@@ -174,7 +174,7 @@ public class ModelVehicle {
     public ArrayList<ModelFillUp> getFilteredFillUps() {
         final ArrayList<ModelFillUp> toReturn = new ArrayList<ModelFillUp>();
         for(ModelFillUp fillUp: fillUps){
-            if(Integer.parseInt(fillUp.getStatus()) >= 0)
+            if((fillUp.getStatus()) >= 0)
                 toReturn.add(fillUp);
         }
         return toReturn;

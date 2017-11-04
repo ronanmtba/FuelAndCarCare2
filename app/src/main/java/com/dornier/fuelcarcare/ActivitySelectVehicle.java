@@ -31,6 +31,8 @@ public class ActivitySelectVehicle extends AppCompatActivity implements ReceiveF
         ModelDataManager.getInstance().setActualContext(ActivitySelectVehicle.this);
         ModelDataManager.getInstance().loadFromDB();
 
+        ModelDataManager ints = ModelDataManager.getInstance();
+
         logoff = (Button) findViewById(R.id.SelectCarLogoff);
         logoff.setOnClickListener(new View.OnClickListener() {
             @Override
