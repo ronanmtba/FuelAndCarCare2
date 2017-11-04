@@ -107,7 +107,8 @@ public class ModelDataManager {
         JSONObject obj = new JSONObject();
         JSONArray vehicles = new JSONArray();
         try {
-            for (ModelVehicle vehicle : this.getVehicles()) {
+            ArrayList<ModelVehicle> vehicles1 = ModelDBAdapter.getInstance(getActualContext()).getAllVehicles();
+            for (ModelVehicle vehicle : vehicles1) {
                 JSONObject jsonVehicle = new JSONObject();
                 JSONArray jsonExpenses = new JSONArray();
                 JSONArray jsonMaintenances = new JSONArray();
@@ -163,6 +164,7 @@ public class ModelDataManager {
                         jsonAlert.put("kilometers",alert.getKilometers());
                         jsonAlert.put("date",ModelDataManager.dateToMySQL(alert.getMaintenance_date()));
                     }
+                    jsonMaintenances.put(jsonAlert);
                 }
                 jsonVehicle.put("expenses", jsonExpenses);
                 jsonVehicle.put("maintenances", jsonMaintenances);
@@ -400,6 +402,7 @@ public class ModelDataManager {
 
     public void addOrUpdateFillUp(ModelVehicle vehicle, ModelFillUp fill_up){
         vehicle.getAllFillUps().remove(fill_up);
+        fill_up.setCar_id(""+vehicle.getLocal_id());
         vehicle.getAllFillUps().add(ModelDBAdapter.getInstance(actualContext).insertFillUp(fill_up));
         //Verifies if there is any alert to show
         ArrayList<ModelMaintenanceAlert> alerts = vehicle.getFilteredAlerts();
@@ -413,11 +416,13 @@ public class ModelDataManager {
 
     public void addOrUpdateExpense(ModelVehicle vehicle, ModelExpense expense){
         vehicle.getExpenses().remove(expense);
+        expense.setCar_id(""+vehicle.getLocal_id());
         vehicle.getExpenses().add(ModelDBAdapter.getInstance(actualContext).insertExpense(expense));
     }
 
     public void addOrUpdateMaintenance(ModelVehicle vehicle, ModelMaintenanceAlert alert){
         vehicle.getAllAlerts().remove(alert);
+        alert.setCar_id(""+vehicle.getLocal_id());
         vehicle.getAllAlerts().add(ModelDBAdapter.getInstance(actualContext).insertMaintenance(alert));
         scheduleAlert(vehicle, alert);
     }
@@ -540,6 +545,15 @@ public class ModelDataManager {
     private ModelVehicle findVehicleByLocalId(long local_id){
         for(ModelVehicle vehicle: vehicles){
             if(vehicle.getLocal_id() == local_id){
+                return vehicle;
+            }
+        }
+        return null;
+    }
+
+    private ModelVehicle findVehicleById(String id){
+        for(ModelVehicle vehicle: vehicles){
+            if(vehicle.getId().equals(id)){
                 return vehicle;
             }
         }
@@ -669,7 +683,7 @@ public class ModelDataManager {
                         expenseDB.getString("date"),
                         expenseDB.getString("car_id"),
                         expenseDB.getString("status"));
-                ModelVehicle vehicle = findVehicleByLocalId(Long.parseLong(temp.getCar_id()));
+                ModelVehicle vehicle = findVehicleById((temp.getCar_id()));
                 addOrUpdateExpense(vehicle,temp);
             }
         }
@@ -689,7 +703,7 @@ public class ModelDataManager {
                         maintenanceDB.getString("date"),
                         maintenanceDB.getString("car_id"),
                         maintenanceDB.getString("status"));
-                ModelVehicle vehicle = findVehicleByLocalId(Long.parseLong(temp.getCar_id()));
+                ModelVehicle vehicle = findVehicleById((temp.getCar_id()));
                 addOrUpdateMaintenance(vehicle,temp);
             }
         }
@@ -713,7 +727,7 @@ public class ModelDataManager {
                         fillUpsDB.getString("car_id"),
                         fillUpsDB.getString("status"),
                         fillUpsDB.getString("kilometers"));
-                ModelVehicle vehicle = findVehicleByLocalId(Long.parseLong(temp.getCar_id()));
+                ModelVehicle vehicle = findVehicleById((temp.getCar_id()));
                 addOrUpdateFillUp(vehicle,temp);
             }
         }

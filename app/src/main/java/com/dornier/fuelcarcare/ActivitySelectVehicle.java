@@ -110,5 +110,9 @@ public class ActivitySelectVehicle extends AppCompatActivity implements ReceiveF
     @Override
     public void serverCall(String response, String TAG) {
         ModelDataManager.getInstance().syncFromDB(response);
+        adapter = new ArrayAdapter<ModelVehicle>(this, android.R.layout.simple_list_item_1, ModelDataManager.getInstance().getVehicles());
+        adapter.notifyDataSetChanged();
+        listView.setAdapter(adapter);
+        ModelDataManager.getInstance().loadFromDB();
     }
 }
