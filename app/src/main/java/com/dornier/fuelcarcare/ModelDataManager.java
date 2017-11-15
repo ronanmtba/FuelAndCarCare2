@@ -192,8 +192,6 @@ public class ModelDataManager {
     public void requestToServer(final String page, final JSONObject array, ReceiveFromServer o, final String identifier) {
         final ReceiveFromServer requestOwner = o;
 
-      /*  if(!sessionStart)
-            setSession();*/
         Log.v("identifier", " => " +array);
 
         StringRequest sr = new StringRequest(Request.Method.POST, "http://192.168.95.128/fcc/" + page, new Response.Listener<String>() {
@@ -238,8 +236,6 @@ public class ModelDataManager {
             }
 
         };
-
-        // queue.add(sr);
 
         sr.setRetryPolicy(new DefaultRetryPolicy(
                 60000,
@@ -471,6 +467,10 @@ public class ModelDataManager {
             return false;
         }
         return true ;
+    }
+
+    public void clearDB(){
+        ModelDBAdapter.getInstance(actualContext).clearDB();
     }
 
 

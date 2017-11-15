@@ -96,6 +96,7 @@ public class ActivitySelectVehicle extends AppCompatActivity implements ReceiveF
 
     }
     private void logoffActions(){
+        ModelDataManager.getInstance().clearDB();
         ModelDataManager.getInstance().removeAutoLogin(this);
         finish();
     }

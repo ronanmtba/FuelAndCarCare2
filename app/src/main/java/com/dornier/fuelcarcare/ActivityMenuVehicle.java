@@ -147,6 +147,23 @@ public class ActivityMenuVehicle extends AppCompatActivity {
             }
         });
 
+        fillUpLiters.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View view, boolean b) {
+                if(
+                        (fuelPrice.length() > 0)
+                                &&
+                                (fillUpLiters.length() > 0)
+                        )
+                    fillUpTotalPrice.setText(String.valueOf(
+                            Float.parseFloat(fillUpLiters.getText().toString())
+                                    *
+                                    Float.parseFloat(fuelPrice.getText().toString())
+                            )
+                    );
+            }
+        });
+
         confirmButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -154,7 +171,7 @@ public class ActivityMenuVehicle extends AppCompatActivity {
                 ModelFillUp fill_up = new ModelFillUp(fillUpTotalPrice.getText().toString(),
                         fuelPrice.getText().toString(),
                         fillUpLiters.getText().toString(),
-                        location.getText().toString(),
+                        location.getText().toString()+" ",
                         dateField.getText().toString(),
                         fuel.getSelectedItem().toString(),
                         selectedVehicle.getLocal_id()+"",

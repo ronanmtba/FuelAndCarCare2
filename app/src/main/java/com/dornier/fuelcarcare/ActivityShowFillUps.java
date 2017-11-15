@@ -76,8 +76,6 @@ public class ActivityShowFillUps extends AppCompatActivity implements OnChartVal
         LineDataSet dataset = new LineDataSet(entries, "Consumo");
         LineData data = new LineData(labels, dataset);
 
-        //dataset.setColors(ColorTemplate.COLORFUL_COLORS); //
-        //dataset.setDrawCubic(true);
         dataset.setCircleColors(colors);
         dataset.setDrawFilled(true);
         dataset.setDrawValues(false);

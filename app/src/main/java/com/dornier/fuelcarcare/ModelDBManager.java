@@ -5,6 +5,9 @@ import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Created by Dornier on 29/05/2017.
  */
@@ -20,15 +23,33 @@ public class ModelDBManager extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase sqLiteDatabase) {
+        createTables(sqLiteDatabase);
+    }
+
+    @Override
+    public void onUpgrade(SQLiteDatabase sqLiteDatabase, int i, int i1) {
+
+    }
+
+    public void createTables(SQLiteDatabase sqLiteDatabase){
         sqLiteDatabase.execSQL(database_create_fill_ups);
         sqLiteDatabase.execSQL(database_create_expenses);
         sqLiteDatabase.execSQL(database_create_maintenances);
         sqLiteDatabase.execSQL(database_create_vehicles);
     }
 
-    @Override
-    public void onUpgrade(SQLiteDatabase sqLiteDatabase, int i, int i1) {
+    public void dropTables(SQLiteDatabase sqLiteDatabase){
+        List<String> tables = new ArrayList<>();
 
+        tables.add("fill_ups");
+        tables.add("expenses");
+        tables.add("maintenances");
+        tables.add("vehicles");
+
+        for (String table : tables) {
+            String dropQuery = "DROP TABLE IF EXISTS " + table;
+            sqLiteDatabase.execSQL(dropQuery);
+        }
     }
 
     /**Tabela fill_ups**/
