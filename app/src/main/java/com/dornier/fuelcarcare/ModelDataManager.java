@@ -42,10 +42,9 @@ import java.util.Map;
  */
 
 public class ModelDataManager {
-    private RequestQueue mRequestQueue;
+
     private Context actualContext;
     private static ModelDataManager singleton;
-    private Boolean sessionStart;
     private static final String TAG = ModelDataManager.class.getSimpleName();
     private ArrayList<ModelVehicle> vehicles;
     private String userId;
@@ -62,15 +61,12 @@ public class ModelDataManager {
     /*************/
 
     private ModelDataManager() {
-        CookieManager cm = new CookieManager();
-        CookieHandler.setDefault(cm);
         vehicles = new ArrayList<ModelVehicle>();
     }
 
     public static ModelDataManager getInstance(){
         if(singleton == null){
             singleton = new ModelDataManager();
-
         }
         return singleton;
     }
@@ -88,7 +84,7 @@ public class ModelDataManager {
         catch (Exception e){
             printErrorToConsole(e);
         }
-        requestToServer("create_user.php", obj, o, "createUser");
+        ModelNetworkManager.getInstance().requestToServer("create_user.php", obj, o, "createUser");
     }
 
     public void login(ReceiveFromServer o, String email, String password){
@@ -100,7 +96,7 @@ public class ModelDataManager {
         catch (Exception e){
             printErrorToConsole(e);
         }
-        requestToServer("login.php", obj, o, "login");
+        ModelNetworkManager.getInstance().requestToServer("login.php", obj, o, "login");
     }
 
     public void syncData(ReceiveFromServer o){
@@ -182,94 +178,7 @@ public class ModelDataManager {
             printErrorToConsole(e);
         }
 
-        requestToServer("sync.php", obj, o, "sync");
-    }
-
-    /**************************************/
-    /* Shared Server Comunication methods */
-    /**************************************/
-
-    public void requestToServer(final String page, final JSONObject array, ReceiveFromServer o, final String identifier) {
-        final ReceiveFromServer requestOwner = o;
-
-        Log.v("identifier", " => " +array);
-
-        StringRequest sr = new StringRequest(Request.Method.POST, "http://192.168.95.128/fcc/" + page, new Response.Listener<String>() {
-            @Override
-            public void onResponse(String response) {
-                Log.v(TAG,page+" => "+response);
-                requestOwner.serverCall(response, identifier);
-            }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                requestOwner.serverCall(null, identifier);
-                sessionStart = false;
-            }
-        }) {
-            @Override
-            protected Map<String, String> getParams() {
-                Map<String, String> params = new HashMap<String, String>();
-                for(int i = 0; i<array.names().length(); i++){
-                    try {
-                        params.put(array.names().getString(i), array.getString(array.names().getString(i)));
-                    }
-                    catch (Exception e){
-                        ModelDataManager.printErrorToConsole(e);
-                    }
-                }
-                return params;
-            }
-
-            @Override
-            public String getBodyContentType() {
-                return "application/x-www-form-urlencoded; charset=UTF-8";
-            }
-
-
-            @Override
-            public Map<String, String> getHeaders() throws AuthFailureError {
-                Map<String, String> params = new HashMap<String, String>();
-                params.put("Content-Type", "application/x-www-form-urlencoded");
-                params.put("Content-Length",String.valueOf(getBody().length));
-                return params;
-            }
-
-        };
-
-        sr.setRetryPolicy(new DefaultRetryPolicy(
-                60000,
-                DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
-                DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
-
-        sr.setShouldCache(true);
-
-        getInstance().addToRequestQueue(sr);
-    }
-
-    public RequestQueue getRequestQueue() {
-        if (mRequestQueue == null) {
-            mRequestQueue = Volley.newRequestQueue(actualContext);
-        }
-
-        return mRequestQueue;
-    }
-
-    public <T> void addToRequestQueue(Request<T> req, String tag) {
-        // set the default tag if tag is empty
-        req.setTag(TextUtils.isEmpty(tag) ? TAG : tag);
-        getRequestQueue().add(req);
-    }
-
-    public <T> void addToRequestQueue(Request<T> req) {
-        req.setTag(TAG);
-        getRequestQueue().add(req);
-    }
-
-    public void cancelPendingRequests(Object tag) {
-        if (mRequestQueue != null) {
-            mRequestQueue.cancelAll(tag);
-        }
+        ModelNetworkManager.getInstance().requestToServer("sync.php", obj, o, "sync");
     }
 
     /***********/
