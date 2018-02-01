@@ -42,12 +42,14 @@ public class ModelNetworkManager {
         return singleton;
     }
 
-    public void requestToServer(final String page, final JSONObject array, ReceiveFromServer o, final String identifier) {
+    public void requestToServer(final String page, final JSONObject array, ReceiveFromServer o,
+                                final String identifier) {
         final ReceiveFromServer requestOwner = o;
 
         Log.v("identifier", " => " +array);
 
-        StringRequest sr = new StringRequest(Request.Method.POST, "http://192.168.95.128/fcc/" + page, new Response.Listener<String>() {
+        StringRequest sr = new StringRequest(Request.Method.POST, "http://192.168.95.128/fcc/" + page,
+                new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
                 Log.v(TAG,page+" => "+response);

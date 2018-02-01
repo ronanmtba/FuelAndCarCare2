@@ -58,7 +58,8 @@ public class ModelAlarmReceiver extends BroadcastReceiver{
                         noti = new Notification(R.drawable.icon_nobg,msg, System.currentTimeMillis());
                     }
 
-                    NotificationManager notificationManager = (NotificationManager) context.getSystemService(NOTIFICATION_SERVICE);
+                    NotificationManager notificationManager = (NotificationManager)
+                            context.getSystemService(NOTIFICATION_SERVICE);
                     noti.flags |= Notification.FLAG_AUTO_CANCEL;
 
                     notificationManager.notify(0, noti);

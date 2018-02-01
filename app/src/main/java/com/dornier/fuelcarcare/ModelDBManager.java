@@ -28,7 +28,7 @@ public class ModelDBManager extends SQLiteOpenHelper {
 
     @Override
     public void onUpgrade(SQLiteDatabase sqLiteDatabase, int i, int i1) {
-
+        dropTables(sqLiteDatabase);
     }
 
     public void createTables(SQLiteDatabase sqLiteDatabase){

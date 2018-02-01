@@ -402,7 +402,8 @@ public class ModelDataManager {
         intentAlarm.putExtra("alert_id", alert.getLocal_id());
 
         AlarmManager alarmManager = (AlarmManager) actualContext.getSystemService(Context.ALARM_SERVICE);
-        alarmManager.set(AlarmManager.RTC_WAKEUP,time, PendingIntent.getBroadcast(actualContext,(int)alert.getLocal_id(),  intentAlarm, PendingIntent.FLAG_UPDATE_CURRENT));
+        alarmManager.set(AlarmManager.RTC_WAKEUP,time, PendingIntent.getBroadcast(actualContext,
+                (int)alert.getLocal_id(),  intentAlarm, PendingIntent.FLAG_UPDATE_CURRENT));
 
     }
 

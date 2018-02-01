@@ -227,11 +227,13 @@ public class ModelDBAdapter {
         values.put(ModelDBManager.vehicles_year,        vehicle.getYear());
         values.put(ModelDBManager.vehicles_status,      vehicle.getStatus());
         if(vehicle.getLocal_id() > 0){
-            database.update(ModelDBManager.table_name_vehicles,values,ModelDBManager.vehicles_local_id+"="+vehicle.getLocal_id(), null);
+            database.update(ModelDBManager.table_name_vehicles,values,ModelDBManager.vehicles_local_id+
+                    "="+vehicle.getLocal_id(), null);
             return vehicle;
         }
         long insertId = database.insert(ModelDBManager.table_name_vehicles, null, values);
-        Cursor cursor = database.query(ModelDBManager.table_name_vehicles, vehicles_columns, ModelDBManager.vehicles_local_id + " = " +
+        Cursor cursor = database.query(ModelDBManager.table_name_vehicles, vehicles_columns,
+                ModelDBManager.vehicles_local_id + " = " +
                 insertId, null,null, null, null);
         cursor.moveToFirst();
         return cursorToVehicle(cursor);
